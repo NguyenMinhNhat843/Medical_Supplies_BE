@@ -19,7 +19,6 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-
     // Tạm thời tắt xác thực bằng UserDetailsService với BCryptPasswordEncoder
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -29,6 +28,11 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin.disable());
                 http.httpBasic(httpBasic -> httpBasic.disable());
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
