@@ -23,17 +23,7 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Tạm thời tắt xác thực bằng UserDetailsService với BCryptPasswordEncoder
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(csrf -> csrf.disable())
-//                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()) // Cho phép tất cả request không cần đăng nhập
-//                .formLogin(formLogin -> formLogin.disable());
-//                http.httpBasic(httpBasic -> httpBasic.disable());
-//        return http.build();
-//    }
-
+    // Câu Hình Test API với Postman
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -56,6 +46,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Câu hình xác thực
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 //        http
