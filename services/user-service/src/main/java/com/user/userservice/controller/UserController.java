@@ -2,6 +2,8 @@ package com.user.userservice.controller;
 
 
 import com.user.userservice.entity.UserEntity;
+import com.user.userservice.exception.MyException;
+import com.user.userservice.model.dto.PasswordDTO;
 import com.user.userservice.model.dto.UserDTO;
 import com.user.userservice.service.IUserService;
 import jakarta.validation.Valid;
@@ -41,5 +43,15 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
+    }
+
+    @PutMapping("/change-password/{id}")
+    public ResponseEntity<?> changePasswordUser(@PathVariable Long id, @RequestBody PasswordDTO passwordDTO){
+        try {
+            userService.updatePassword(id, passwordDTO);
+            return ResponseEntity.ok("Password updated successfully");
+        } catch (MyException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }

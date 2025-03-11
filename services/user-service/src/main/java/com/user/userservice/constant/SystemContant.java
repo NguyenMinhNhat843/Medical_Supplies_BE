@@ -9,4 +9,9 @@ public class SystemContant {
     public static final String STAFF_ROLE = "ROLE_STAFF";
 
     public static final String PASSWORD_DEFAULT = "123456";
+
+
+    public static final String CHANGE_PASSWORD_SUCCESS = "Change password success";
+
+    public static final String CHANGE_PASSWORD_FAIL = "Change password fail";
 }

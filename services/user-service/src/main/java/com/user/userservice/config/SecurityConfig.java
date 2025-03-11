@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/users/list").permitAll()
                         .requestMatchers("/users/register").permitAll()  // Cho phép đăng ký mà không cần đăng nhập
+                        .requestMatchers("/users/change-password/**").permitAll()
                         .requestMatchers("/api/private/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("MANAGER")
                         .anyRequest().authenticated()
