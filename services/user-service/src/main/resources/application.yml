@@ -12,10 +12,9 @@ spring:
         show-sql: true
     application:
         name: user-service
-    security:
-        user:
-            name: admin
-            password: admin123
+    jwt:
+        expiration: 2592000 #30 days = 30 * 24 * 60 * 60
+        secretKey: TaqlmGv1iEDMRiFp/pHuID1+T84IABfuA0xXh4GhiUI=
 eureka:
     client:
         service-url:
