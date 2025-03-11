@@ -2,6 +2,8 @@ package com.user.userservice.entity;
 
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CurrentTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.stereotype.Component;
 
@@ -17,10 +19,14 @@ public class BaseEntity {
     private Long id;
 
     @Column(name = "createat")
-    private Date createdAt;
+    @CurrentTimestamp
+    private Date createAt;
+
+
 
     @Column (name = "updateat")
-    private Date updatedAt;
+    @UpdateTimestamp
+    private Date updateAt;
 
 
     public Long getId() {
@@ -31,20 +37,21 @@ public class BaseEntity {
         this.id = id;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
+
+    public Date getCreateAt() {
+        return createAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
     }
 
 
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public Date getUpdateAt() {
+        return updateAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUpdateAt(Date updateAt) {
+        this.updateAt = updateAt;
     }
 }

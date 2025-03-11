@@ -6,16 +6,38 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 
+import java.util.Date;
+
 public class UserDTO {
 
     private Long id;
-
 
     private String username;
 
     private String password;
 
     private String role;
+
+    private Date createAt;
+
+    private Date updateAt;
+
+
+    public Date getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
+    }
+
+    public Date getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(Date updateAt) {
+        this.updateAt = updateAt;
+    }
 
     public Long getId() {
         return id;
