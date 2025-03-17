@@ -10,6 +10,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.io.Decoders;
 
@@ -32,23 +33,24 @@ public class JwtTokenUtil {
     private String secretKey;
 
     // Tao token từ  username
-    public String generateToken(UserEntity user) throws Exception{
+    public String generateToken(UserEntity user) throws Exception {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+        claims.put("username", user.getUsername());
+        claims.put("role", user.getRole());
+        System.out.println("Generating Token for user: " + user.getUsername());
 
-        Map<String,Object> claims = new HashMap<>();
-        claims.put("id",user.getId());
-
-       try {
-           String token = Jwts.builder()
-                   .setClaims(claims)
-                   .setSubject(user.getUsername())
-                   .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000L))
-                   .signWith(SignatureAlgorithm.HS256, secretKey)
-                   .compact();
-           return token;
-       }
-       catch (Exception e){
-              throw new InvalidParameterException("Cannot create jwt token, error: "+e.getMessage());
-       }
+        try {
+            return Jwts.builder()
+                    .setClaims(claims)
+                    .setSubject(user.getUsername())
+                    .setIssuedAt(new Date())
+                    .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
+                    .signWith(getSignKey(), SignatureAlgorithm.HS256)
+                    .compact();
+        } catch (Exception e) {
+            throw new InvalidParameterException("Cannot create JWT token, error: " + e.getMessage());
+        }
     }
 
 
@@ -72,19 +74,18 @@ public class JwtTokenUtil {
     }
 
    // Check experation
-   public boolean expireToken(String token){
-      Date experation = this.extractClaim(token,Claims::getExpiration);
-      return    experation.before(new Date());
+   public boolean isTokenExpired(String token) {
+       Date expiration = this.extractClaim(token, Claims::getExpiration);
+       return expiration.before(new Date());
    }
-
    // extract phone
-    public String extractUsernam(String token){
+    public String extractUsername(String token){
         return this.extractClaim(token,Claims::getSubject);
     }
 
 // validate Token
-public boolean valiateToken(String token, UserDTO userDTO){
-    String userName = extractUsernam(token);
-    return (userName.equals(userDTO.getUsername())) && !expireToken(token);
+public boolean validateToken(String token, UserDetails userDTO){
+    String userName = extractUsername(token);
+    return (userName.equals(userDTO.getUsername())) && !isTokenExpired(token);
 }
 }

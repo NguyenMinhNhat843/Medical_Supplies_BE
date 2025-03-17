@@ -6,15 +6,18 @@ import com.user.userservice.exception.MyException;
 import com.user.userservice.model.dto.PasswordDTO;
 import com.user.userservice.model.dto.UserDTO;
 import com.user.userservice.service.IUserService;
+import com.user.userservice.utils.JwtTokenUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,6 +26,10 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
     @GetMapping("/list")
     public List<UserEntity> getAllUsers() {
         return userService.getAllUsers();
@@ -53,5 +60,15 @@ public class UserController {
         } catch (MyException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody UserDTO userDTO) {
+      try {
+          String token = userService.login(userDTO.getUsername(), userDTO.getPassword());
+          return ResponseEntity.ok(Map.of("token", token));
+      } catch (Exception e) {
+          throw new RuntimeException(e);
+      }
     }
 }

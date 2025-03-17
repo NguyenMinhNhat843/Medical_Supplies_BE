@@ -8,7 +8,11 @@ import com.user.userservice.model.dto.PasswordDTO;
 import com.user.userservice.model.dto.UserDTO;
 import com.user.userservice.repository.IUserRepository;
 import com.user.userservice.service.IUserService;
+import com.user.userservice.utils.JwtTokenUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,8 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements IUserService {
 
     @Autowired
@@ -29,6 +35,14 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+
+
+
+    private final JwtTokenUtil jwtTokenUtil;
+
+    private  AuthenticationManager authenticationManager;
+
     @Override
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
@@ -36,12 +50,13 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserDTO registerUser(UserDTO userDTO) throws MyException {
-        if(userRepository.findOneByUsername(userDTO.getUsername())!=null){
-            throw new MyException("Tên đăng nhập đã tồn tại");
+        if(userRepository.findByUsername(userDTO.getUsername()).isPresent()){
+            throw new MyException("Tên đăng nhập đã tồn tại1");
         }
         UserEntity userEntity = userConverter.convertToEntity(userDTO);
         userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userEntity.setRole("USER");
+
         return userConverter.convertToDto(userRepository.save(userEntity));
     }
 
@@ -61,6 +76,29 @@ public class UserServiceImpl implements IUserService {
         else {
             throw new MyException(SystemContant.CHANGE_PASSWORD_FAIL);
         }
+    }
+
+    @Override
+    public String login(String username, String password) throws Exception {
+        Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+        if(userEntity.isEmpty()){
+            throw new MyException("Invalid phone number / password");
+        }
+        UserEntity existingUser = userEntity.get();
+        // check pass
+        if(!passwordEncoder.matches(password, existingUser.getPassword())){
+            throw new MyException("Wrong phone number or password");
+        }
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                username, password,
+                existingUser.getAuthorities()
+        );
+        System.out.println("Stored password hash: " + existingUser.getPassword());
+        System.out.println("Entered password: " + password);
+        System.out.println("Match: " + passwordEncoder.matches(password, existingUser.getPassword()));
+
+       // authenticationManager.authenticate(authenticationToken);
+        return jwtTokenUtil.generateToken(existingUser);
 
     }
 }

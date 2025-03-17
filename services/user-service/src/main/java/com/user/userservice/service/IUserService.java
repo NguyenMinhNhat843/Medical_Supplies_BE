@@ -14,4 +14,8 @@ public interface IUserService {
 
     // update password
     void updatePassword(long id, PasswordDTO passwordDTO) throws MyException;
+
+    // login
+    String login(String username, String password) throws Exception;
+
 }
