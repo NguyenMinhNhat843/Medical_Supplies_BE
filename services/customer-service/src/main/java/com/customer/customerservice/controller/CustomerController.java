@@ -38,7 +38,7 @@ public class CustomerController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCustomer(@PathVariable Long id) {
-        System.out.println("Received DELETE request for ID: " + id);
+        System.out.println("Received DELETE for ID: " + id);
 
         boolean isDeleted = customerService.deleteCustomer(id);
         if (isDeleted) {
