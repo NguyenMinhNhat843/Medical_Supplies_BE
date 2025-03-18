@@ -5,13 +5,13 @@ import com.user.userservice.entity.UserEntity;
 import com.user.userservice.exception.MyException;
 import com.user.userservice.model.dto.PasswordDTO;
 import com.user.userservice.model.dto.UserDTO;
+import com.user.userservice.repository.IUserRepository;
 import com.user.userservice.service.IUserService;
 import com.user.userservice.utils.JwtTokenUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +29,10 @@ public class UserController {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+
+    @Autowired
+    private IUserRepository userRepository;
 
     @GetMapping("/list")
     public List<UserEntity> getAllUsers() {
@@ -70,5 +74,11 @@ public class UserController {
       } catch (Exception e) {
           throw new RuntimeException(e);
       }
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        return userRepository.findById(id)
+                .map(user -> ResponseEntity.ok(user))
+                .orElse(ResponseEntity.notFound().build());
     }
 }
