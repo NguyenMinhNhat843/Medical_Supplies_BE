@@ -4,8 +4,10 @@ import com.user.userservice.constant.SystemContant;
 import com.user.userservice.converter.UserConverter;
 import com.user.userservice.entity.UserEntity;
 import com.user.userservice.exception.MyException;
+import com.user.userservice.model.dto.CreateCustomerRequest;
 import com.user.userservice.model.dto.PasswordDTO;
 import com.user.userservice.model.dto.UserDTO;
+import com.user.userservice.model.request.UserRegisterRequest;
 import com.user.userservice.repository.IUserRepository;
 import com.user.userservice.service.IUserService;
 import com.user.userservice.utils.JwtTokenUtil;
@@ -17,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 
 import java.util.Date;
@@ -36,6 +39,8 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private RestTemplate restTemplate;
 
 
 
@@ -100,5 +105,25 @@ public class UserServiceImpl implements IUserService {
        // authenticationManager.authenticate(authenticationToken);
         return jwtTokenUtil.generateToken(existingUser);
 
+    }
+
+    @Override
+    public void register(UserRegisterRequest userRegisterRequest) throws MyException {
+        if(userRepository.findByUsername(userRegisterRequest.getUsername()).isPresent()){
+            throw new MyException("Tên đăng nhập đã tồn tại");
+        }
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(userRegisterRequest.getUsername());
+        userEntity.setPassword(passwordEncoder.encode(userRegisterRequest.getPassword()));
+        userEntity.setRole("USER");
+        userRepository.save(userEntity);
+        CreateCustomerRequest createCustomerRequest = new CreateCustomerRequest();
+        createCustomerRequest.setUserId(userEntity.getId());
+        try {
+            restTemplate.postForObject("http://AUTH-SERVICE/users", createCustomerRequest, Void.class);
+            System.out.println("✅ Đã gọi user-service tạo CustomerInfo cho userId: " + userEntity.getId());
+        } catch (Exception e) {
+            System.err.println("❌ Gọi user-service thất bại: " + e.getMessage());
+        }
     }
 }

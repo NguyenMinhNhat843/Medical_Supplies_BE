@@ -1,6 +1,7 @@
 package com.auth.customerservice.controller;
 
 import com.auth.customerservice.entity.CustomerEntity;
+import com.auth.customerservice.model.CreateCustomerRequest;
 import com.auth.customerservice.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -58,8 +59,9 @@ public class CustomerController {
     }
 
     // Tạo mới khách hàng
-    @PostMapping("/add")
-    public CustomerEntity createCustomer(@RequestBody CustomerEntity customer) {
-        return customerService.saveCustomer(customer);
+    @PostMapping
+    public ResponseEntity<Void> createCustomerInfo(@RequestBody CreateCustomerRequest request) {
+        customerService.createCustomerForUser(request.getUserId());
+        return ResponseEntity.ok().build();
     }
 }

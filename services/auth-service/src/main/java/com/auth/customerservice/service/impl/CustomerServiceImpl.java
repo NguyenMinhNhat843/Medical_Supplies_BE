@@ -54,4 +54,16 @@ public class CustomerServiceImpl implements ICustomerService {
 
         return customerRepository.save(customer);
     }
+
+    @Override
+    public void createCustomerForUser(Long userId) {
+        CustomerEntity customer = new CustomerEntity();
+        customer.setUserId(userId);
+        customer.setFirstName("");
+        customer.setLastName("");
+        customer.setPhone("");
+        customer.setAddress("");
+        customer.setEmail("");
+        customerRepository.save(customer);
+    }
 }

@@ -4,6 +4,7 @@ import com.user.userservice.entity.UserEntity;
 import com.user.userservice.exception.MyException;
 import com.user.userservice.model.dto.PasswordDTO;
 import com.user.userservice.model.dto.UserDTO;
+import com.user.userservice.model.request.UserRegisterRequest;
 
 import java.util.List;
 
@@ -17,5 +18,7 @@ public interface IUserService {
 
     // login
     String login(String username, String password) throws Exception;
+
+    void register(UserRegisterRequest userRegisterRequest) throws MyException;
 
 }

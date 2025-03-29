@@ -13,4 +13,6 @@ public interface ICustomerService {
     void deleteCustomer(Long customerId);
 
     CustomerEntity updateCustomer(Long userId, CustomerEntity user);
+
+    void createCustomerForUser(Long userId);
 }

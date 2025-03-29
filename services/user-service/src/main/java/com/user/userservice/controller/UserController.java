@@ -5,6 +5,7 @@ import com.user.userservice.entity.UserEntity;
 import com.user.userservice.exception.MyException;
 import com.user.userservice.model.dto.PasswordDTO;
 import com.user.userservice.model.dto.UserDTO;
+import com.user.userservice.model.request.UserRegisterRequest;
 import com.user.userservice.repository.IUserRepository;
 import com.user.userservice.service.IUserService;
 import com.user.userservice.utils.JwtTokenUtil;
@@ -39,21 +40,26 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+//    @PostMapping("/register")
+//    public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO newUser, BindingResult bindingResult) {
+//      if(bindingResult.hasErrors()){
+//          List<String> errors = bindingResult.getFieldErrors()
+//                  .stream()
+//                  .map(FieldError::getDefaultMessage)
+//                    .collect(Collectors.toList());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+//      }
+//        try {
+//            return ResponseEntity.ok(userService.registerUser(newUser));
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+//        }
+//
+//    }
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO newUser, BindingResult bindingResult) {
-      if(bindingResult.hasErrors()){
-          List<String> errors = bindingResult.getFieldErrors()
-                  .stream()
-                  .map(FieldError::getDefaultMessage)
-                    .collect(Collectors.toList());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-      }
-        try {
-            return ResponseEntity.ok(userService.registerUser(newUser));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-
+    public ResponseEntity<String> register(@RequestBody UserRegisterRequest request) throws MyException {
+        userService.register(request);
+        return ResponseEntity.ok("Đăng ký thành công!");
     }
 
     @PutMapping("/change-password/{id}")
