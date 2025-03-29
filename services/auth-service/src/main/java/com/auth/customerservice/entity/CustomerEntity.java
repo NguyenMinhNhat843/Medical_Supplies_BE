@@ -3,6 +3,8 @@ package com.auth.customerservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
@@ -31,10 +33,11 @@ public class CustomerEntity {
     @Column(name = "address")
     private String address;
 
-
+    @CreationTimestamp
     @Column(name = "createat")
     private Date createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updateat")
     private Date updatedAt;
 

@@ -22,24 +22,20 @@ import java.util.Base64;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${spring.jwt.secretKey}")
-    private String jwtSecret;
-
-    @Bean
-    JwtDecoder jwtDecoder() {
-        byte[] secretKeyBytes = Base64.getUrlDecoder().decode(jwtSecret);
-        SecretKeySpec secretKeySpec = new SecretKeySpec(secretKeyBytes, "HmacSHA256");
-        return NimbusJwtDecoder.withSecretKey(secretKeySpec).build();
-    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
+        http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())))
-                .build();
-    }
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/users/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
+//                .authenticationProvider(authenticationProvider());
+        //.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
+        return http.build();
+    }
 }
