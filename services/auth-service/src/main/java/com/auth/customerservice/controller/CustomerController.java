@@ -16,22 +16,47 @@ public class CustomerController {
     @Autowired
     private  ICustomerService customerService;
 
-
+    // Lấy thông tin khách hàng theo userId
     @GetMapping("/{userId}")
     public ResponseEntity<?> getCustomerByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(customerService.getCustomerByUserId(userId));
     }
 
+
+    // Thông tin bản thân theo userId đăng nhập
     @GetMapping("/me")
     public Optional<CustomerEntity> getProfile(Authentication auth) {
         Long userId = Long.parseLong(auth.getName());
         return customerService.getCustomerByUserId(userId);
     }
 
+    // Cập nhật thông tin bản thân
     @PostMapping("/me")
     public CustomerEntity saveProfile(Authentication auth, @RequestBody CustomerEntity profile) {
         Long userId = Long.parseLong(auth.getName());
         profile.setUserId(userId);
         return customerService.saveCustomer(profile);
+    }
+
+    // CRUD Cho quản trị viên
+    @GetMapping("/list")
+    public ResponseEntity<?> getAllCustomer() {
+        return ResponseEntity.ok(customerService.getAllCustomer());
+    }
+
+    @DeleteMapping("/delete/{customerId}")
+    public void deleteCustomer(@PathVariable Long customerId) {
+        customerService.deleteCustomer(customerId);
+    }
+
+    @PutMapping("/add/{userId}")
+    public CustomerEntity updateCustomer(@PathVariable Long userId, @RequestBody CustomerEntity customer) {
+        return customerService.updateCustomer(userId, customer);
+    }
+
+    // Tạo mới khách hàng
+    @PostMapping("/add")
+    public CustomerEntity createCustomer(@RequestBody CustomerEntity customer) {
+        return customerService.saveCustomer(customer);
     }
 }

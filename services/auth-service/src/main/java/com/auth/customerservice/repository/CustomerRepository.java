@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface CustomerRepository extends JpaRepository<CustomerEntity,Long> {
 
     Optional<CustomerEntity> findByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }
