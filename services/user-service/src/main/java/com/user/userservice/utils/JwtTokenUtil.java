@@ -43,7 +43,7 @@ public class JwtTokenUtil {
         try {
             return Jwts.builder()
                     .setClaims(claims)
-                    .setSubject(user.getUsername())
+                    .setSubject(user.getId().toString())
                     .setIssuedAt(new Date())
                     .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
                     .signWith(getSignKey(), SignatureAlgorithm.HS256)

@@ -19,20 +19,11 @@ public class CustomerServiceImpl implements ICustomerService {
     @Autowired
     private  CustomerRepository customerRepository;
 
-    private  UserFeignClient userFeignClient;
-
 
 
     @Override
-    public CustomerEntity createCustomer(CustomerEntity customerEntity, Long userId) {
-        ResponseEntity<UserDTO> userResponse  = userFeignClient.getAccountById(customerEntity.getUserId(),"Bearer token");
-        if(userResponse.getStatusCode() == HttpStatus.OK){
-            customerEntity.setUserId(userId);
-            return customerRepository.save(customerEntity);
-        }
-        else {
-            throw new RuntimeException("User not found");
-        }
+    public CustomerEntity saveCustomer(CustomerEntity customerEntity) {
+        return customerRepository.save(customerEntity);
     }
 
     @Override

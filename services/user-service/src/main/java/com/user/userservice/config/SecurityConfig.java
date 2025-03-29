@@ -1,6 +1,6 @@
 package com.user.userservice.config;
 
-import com.user.userservice.filters.JwtFilters;
+//import com.user.userservice.filters.JwtFilters;
 import com.user.userservice.repository.IUserRepository;
 import com.user.userservice.security.CustomSuccessHandler;
 import com.user.userservice.service.serviceImpl.UserDetailsServiceImpl;
@@ -29,7 +29,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtFilters jwtFilter;
+   // private final JwtFilters jwtFilter;
     private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
@@ -45,8 +45,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .authenticationProvider(authenticationProvider());
+                //.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
