@@ -3,6 +3,7 @@ package com.auth.customerservice.service.impl;
 import com.auth.customerservice.FeignClient.UserFeignClient;
 import com.auth.customerservice.dto.UserDTO;
 import com.auth.customerservice.entity.CustomerEntity;
+import com.auth.customerservice.model.UpdateCustomerRequest;
 import com.auth.customerservice.repository.CustomerRepository;
 import com.auth.customerservice.service.ICustomerService;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public CustomerEntity updateCustomer(Long userId, CustomerEntity customerUpdate) {
+    public CustomerEntity updateCustomer(Long userId, UpdateCustomerRequest customerUpdate) {
         CustomerEntity customer = customerRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Customer not found with userId: " + userId));
 

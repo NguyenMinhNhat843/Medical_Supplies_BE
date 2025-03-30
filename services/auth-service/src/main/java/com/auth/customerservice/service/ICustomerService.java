@@ -1,6 +1,7 @@
 package com.auth.customerservice.service;
 
 import com.auth.customerservice.entity.CustomerEntity;
+import com.auth.customerservice.model.UpdateCustomerRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,7 @@ public interface ICustomerService {
     List<CustomerEntity> getAllCustomer();
     void deleteCustomer(Long customerId);
 
-    CustomerEntity updateCustomer(Long userId, CustomerEntity user);
+    CustomerEntity updateCustomer(Long userId, UpdateCustomerRequest user);
 
     void createCustomerForUser(Long userId);
 }

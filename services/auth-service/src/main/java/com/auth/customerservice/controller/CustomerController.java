@@ -2,6 +2,7 @@ package com.auth.customerservice.controller;
 
 import com.auth.customerservice.entity.CustomerEntity;
 import com.auth.customerservice.model.CreateCustomerRequest;
+import com.auth.customerservice.model.UpdateCustomerRequest;
 import com.auth.customerservice.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,11 +36,21 @@ public class CustomerController {
     }
 
     // Cập nhật thông tin bản thân
-    @PostMapping("/me")
-    public CustomerEntity saveProfile(@RequestHeader("X-UserId") Long userId, @RequestBody CustomerEntity profile) {
-       //Long userId = Long.parseLong(auth.getName());
-        profile.setUserId(userId);
-        return customerService.saveCustomer(profile);
+//    @PostMapping("/me")
+//    public CustomerEntity saveProfile(@RequestHeader("X-UserId") Long userId, @RequestBody CustomerEntity profile) {
+//       //Long userId = Long.parseLong(auth.getName());
+//        profile.setUserId(userId);
+//        return customerService.saveCustomer(profile);
+//    }
+
+    // Cập nhật thông tin cá nhân
+    @PutMapping("/me")
+    public ResponseEntity<String> updateCustomerInfo(
+            @RequestHeader("X-UserId") Long userId,
+            @RequestBody UpdateCustomerRequest request) {
+
+        customerService.updateCustomer(userId, request);
+        return ResponseEntity.ok("Cập nhật thông tin thành công!");
     }
 
     // CRUD Cho quản trị viên
@@ -54,7 +65,7 @@ public class CustomerController {
     }
 
     @PutMapping("/add/{userId}")
-    public CustomerEntity updateCustomer(@PathVariable Long userId, @RequestBody CustomerEntity customer) {
+    public CustomerEntity updateCustomer(@PathVariable Long userId, @RequestBody UpdateCustomerRequest customer) {
         return customerService.updateCustomer(userId, customer);
     }
 
