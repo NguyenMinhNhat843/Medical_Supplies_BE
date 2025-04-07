@@ -72,4 +72,6 @@ public class CustomerServiceImpl implements ICustomerService {
     public Optional<CustomerEntity> getCustomerByEmail(String email) {
         return customerRepository.findByEmail(email);
     }
+
+
 }

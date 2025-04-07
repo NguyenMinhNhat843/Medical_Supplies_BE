@@ -14,6 +14,8 @@ public class JwtUserIdFilter implements GlobalFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        String path = exchange.getRequest().getPath().toString();
+        System.out.println("✅ JwtUserIdFilter => Path: " + path); // In path đang xử lý
         return exchange.getPrincipal()
                 .filter(principal -> principal instanceof JwtAuthenticationToken)
                 .cast(JwtAuthenticationToken.class)

@@ -19,4 +19,5 @@ public interface ICustomerService {
     void createCustomerForUser(Long userId);
 
     Optional<CustomerEntity> getCustomerByEmail(String email);
+
 }

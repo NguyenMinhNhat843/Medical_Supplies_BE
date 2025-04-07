@@ -84,6 +84,18 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public void updatePasswordOTP(Long userId, String newPassword) throws MyException {
+        Optional<UserEntity> opt = userRepository.findById(userId);
+        if (opt.isPresent()) {
+            UserEntity user = opt.get();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("UserId không tồn tại");
+        }
+    }
+
+    @Override
     public String login(String username, String password) throws Exception {
         Optional<UserEntity> userEntity = userRepository.findByUsername(username);
         if(userEntity.isEmpty()){

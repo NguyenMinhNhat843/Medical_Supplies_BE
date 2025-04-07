@@ -5,8 +5,9 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-
+import lombok.extern.slf4j.Slf4j;
 @Service
+@Slf4j
 public class OtpService {
     private final Map<String, OtpEntry> otpStore = new ConcurrentHashMap<>();
 
@@ -27,7 +28,12 @@ public class OtpService {
 
     public Long getUserIdFromOtpStore(String email) {
         OtpEntry entry = otpStore.get(email);
-        return entry != null ? entry.userId : null;
+        if (entry == null) {
+            log.warn("❌ Không tìm thấy OTP entry cho email: {}", email);
+            return null;
+        }
+        log.info("✅ Found OTP entry with userId: {} for email: {}", entry.userId, email);
+        return entry.userId;
     }
 
     static class OtpEntry {
@@ -40,5 +46,7 @@ public class OtpService {
             this.userId = userId;
         }
     }
+
+
 }
 

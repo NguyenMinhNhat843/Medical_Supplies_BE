@@ -1,5 +1,6 @@
 package com.auth.customerservice.controller;
 
+import com.auth.customerservice.dto.CustomerDTO;
 import com.auth.customerservice.dto.CustomerEmailDTO;
 import com.auth.customerservice.entity.CustomerEntity;
 import com.auth.customerservice.model.CreateCustomerRequest;
@@ -79,9 +80,14 @@ public class CustomerController {
 
     // Lấy thông tin khách hàng theo email
     @GetMapping("/email")
-    public ResponseEntity<?> getCustomerByEmail(@RequestParam("value") String email) {
+    public ResponseEntity<CustomerDTO> getCustomerByEmail(@RequestParam("value") String email) {
         return customerService.getCustomerByEmail(email)
-                .map(customer -> ResponseEntity.ok(new CustomerEmailDTO(customer.getId(), customer.getEmail())))
+                .map(entity -> {
+                    CustomerDTO dto = new CustomerDTO();
+                    dto.setUserId(entity.getUserId());   // ✅ Đảm bảo userId chính là account.id
+                    dto.setEmail(entity.getEmail());     // ✅ Email vẫn cần để khớp
+                    return ResponseEntity.ok(dto);
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 }

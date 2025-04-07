@@ -18,6 +18,8 @@ public class EmailService {
         message.setTo(to);
         message.setSubject("Mã OTP đặt lại mật khẩu");
         message.setText("Mã OTP của bạn là: " + otp + "\nMã này có hiệu lực trong 5 phút.");
+        System.out.println("✅ Email sent.");
+
         mailSender.send(message);
     }
 }

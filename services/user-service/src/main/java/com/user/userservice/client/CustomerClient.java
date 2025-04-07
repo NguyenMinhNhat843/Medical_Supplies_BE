@@ -20,7 +20,7 @@ public class CustomerClient {
     public Optional<CustomerEmailDTO> getCustomerByEmail(String email) {
         try {
             ResponseEntity<CustomerEmailDTO> response = restTemplate.getForEntity(
-                    "http://USER-SERVICE/users/email?value=" + email,
+                    "http://AUTH-SERVICE/users/email?value=" + email,
                     CustomerEmailDTO.class
             );
             return Optional.ofNullable(response.getBody());

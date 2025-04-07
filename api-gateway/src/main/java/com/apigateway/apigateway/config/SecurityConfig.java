@@ -8,6 +8,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
@@ -21,15 +22,18 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        return http
+        http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/auth/**", "/users/**"))
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/users/**").permitAll() // Cho phép auth-service public
-                        .pathMatchers("/auth/**").permitAll() // Cho phép auth-service public
-                        .anyExchange().authenticated()        // Các request khác phải có JWT
+                        .pathMatchers("/auth/**").permitAll() // Cho phép toàn bộ auth
+                        .pathMatchers("/users/**").permitAll() // Cho phép user
+                        .anyExchange().authenticated()         // Còn lại yêu cầu xác thực
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtSpec -> jwtSpec.jwtDecoder(jwtDecoder())))
-                .build();
+                // ⚠️ Đặt sau permitAll, JWT chỉ xử lý phần cần authenticated
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtSpec -> jwtSpec.jwtDecoder(jwtDecoder())));
+
+        return http.build();
     }
 
     @Bean

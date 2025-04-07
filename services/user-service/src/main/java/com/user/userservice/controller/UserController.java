@@ -23,7 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
+
 public class UserController {
 
     @Autowired
@@ -111,10 +113,7 @@ public class UserController {
         return ResponseEntity.ok("OTP đã được gửi tới email.");
     }
 
-    // =====================
-    // 2. FLOW: VERIFY OTP
-    // =====================
-    // Endpoint: POST /auth/verify-otp
+
     @PostMapping("/verify-otp")
     public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpRequest request) {
         boolean valid = otpService.validateOtp(request.getEmail(), request.getOtp());
@@ -122,19 +121,18 @@ public class UserController {
         return ResponseEntity.ok("OTP hợp lệ. Bạn có thể đặt lại mật khẩu.");
     }
 
-    // =====================
-    // 3. FLOW: RESET PASSWORD
-    // =====================
-    // Endpoint: POST /auth/reset-password
-//    @PostMapping("/reset-password")
-//    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
-//        Long userId = otpService.getUserIdFromOtpStore(request.getEmail());
-//        if (userId == null) return ResponseEntity.badRequest().body("Không tìm thấy userId từ email");
-//
-//        customerClient.updatePasswordByUserId(userId, request.getNewPassword());
-//        otpService.clearOtp(request.getEmail());
-//
-//        return ResponseEntity.ok("Đặt lại mật khẩu thành công");
-//    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) throws MyException {
+
+
+        Long userId = otpService.getUserIdFromOtpStore(request.getEmail());
+
+        if (userId == null) return ResponseEntity.badRequest().body("Không tìm thấy userId từ email");
+
+        userService.updatePasswordOTP(userId, request.getNewPassword()); // ✅ gọi auth-service nội bộ
+        otpService.clearOtp(request.getEmail());
+        return ResponseEntity.ok("Đặt lại mật khẩu thành công");
+    }
 
 }
