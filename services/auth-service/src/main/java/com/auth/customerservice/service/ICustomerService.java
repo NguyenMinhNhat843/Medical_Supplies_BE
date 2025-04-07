@@ -1,5 +1,6 @@
 package com.auth.customerservice.service;
 
+import com.auth.customerservice.dto.CustomerDTO;
 import com.auth.customerservice.entity.CustomerEntity;
 import com.auth.customerservice.model.UpdateCustomerRequest;
 
@@ -16,4 +17,6 @@ public interface ICustomerService {
     CustomerEntity updateCustomer(Long userId, UpdateCustomerRequest user);
 
     void createCustomerForUser(Long userId);
+
+    Optional<CustomerEntity> getCustomerByEmail(String email);
 }

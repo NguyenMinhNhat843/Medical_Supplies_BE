@@ -1,55 +1,37 @@
-package com.auth.customerservice.entity;
+package com.auth.customerservice.dto;
 
-
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Entity
-@Table(name = "customerinfo")
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-public class CustomerEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CustomerDTO {
+
     private Long id;
 
-    @Column(name = "firstname")
+
     private String firstName;
 
-    @Column(name = "lastname")
+
     private String lastName;
 
-    @Column(unique = true, nullable = true)
+
     private String email;
 
-    @Column(name = "phone")
+
     private String phone;
 
-    @Column(name = "address")
-    private String address;
 
-    @CreationTimestamp
-    @Column(name = "createat")
+    private String address;
     private Date createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updateat")
-    private Date updatedAt;
 
-    @Column(name = "user_id")
+    private Date updatedAt;
     private Long userId;
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public CustomerDTO() {
     }
 
     public Long getId() {
@@ -114,5 +96,13 @@ public class CustomerEntity {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

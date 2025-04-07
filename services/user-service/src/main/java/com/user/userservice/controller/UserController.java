@@ -1,13 +1,20 @@
 package com.user.userservice.controller;
 
 
+import com.user.userservice.client.CustomerClient;
 import com.user.userservice.entity.UserEntity;
 import com.user.userservice.exception.MyException;
+import com.user.userservice.model.dto.CustomerEmailDTO;
 import com.user.userservice.model.dto.PasswordDTO;
 import com.user.userservice.model.dto.UserDTO;
+import com.user.userservice.model.request.RequestOtpRequest;
+import com.user.userservice.model.request.ResetPasswordRequest;
 import com.user.userservice.model.request.UserRegisterRequest;
+import com.user.userservice.model.request.VerifyOtpRequest;
 import com.user.userservice.repository.IUserRepository;
 import com.user.userservice.service.IUserService;
+import com.user.userservice.service.serviceImpl.EmailService;
+import com.user.userservice.service.serviceImpl.OtpService;
 import com.user.userservice.utils.JwtTokenUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,6 +42,10 @@ public class UserController {
 
     @Autowired
     private IUserRepository userRepository;
+
+    @Autowired private CustomerClient customerClient;
+    @Autowired private OtpService otpService;
+    @Autowired private EmailService emailService;
 
     @GetMapping("/list")
     public List<UserEntity> getAllUsers() {
@@ -87,4 +99,42 @@ public class UserController {
                 .map(user -> ResponseEntity.ok(user))
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping("/request-otp")
+    public ResponseEntity<String> requestOtp(@RequestBody RequestOtpRequest request) {
+        Optional<CustomerEmailDTO> userOpt = customerClient.getCustomerByEmail(request.getEmail());
+        if (userOpt.isEmpty()) return ResponseEntity.badRequest().body("Email không tồn tại");
+
+        CustomerEmailDTO user = userOpt.get();
+        String otp = otpService.generateOtp(request.getEmail(), user.getUserId());
+        emailService.sendOtp(request.getEmail(), otp);
+        return ResponseEntity.ok("OTP đã được gửi tới email.");
+    }
+
+    // =====================
+    // 2. FLOW: VERIFY OTP
+    // =====================
+    // Endpoint: POST /auth/verify-otp
+    @PostMapping("/verify-otp")
+    public ResponseEntity<String> verifyOtp(@RequestBody VerifyOtpRequest request) {
+        boolean valid = otpService.validateOtp(request.getEmail(), request.getOtp());
+        if (!valid) return ResponseEntity.badRequest().body("OTP không đúng hoặc đã hết hạn");
+        return ResponseEntity.ok("OTP hợp lệ. Bạn có thể đặt lại mật khẩu.");
+    }
+
+    // =====================
+    // 3. FLOW: RESET PASSWORD
+    // =====================
+    // Endpoint: POST /auth/reset-password
+//    @PostMapping("/reset-password")
+//    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+//        Long userId = otpService.getUserIdFromOtpStore(request.getEmail());
+//        if (userId == null) return ResponseEntity.badRequest().body("Không tìm thấy userId từ email");
+//
+//        customerClient.updatePasswordByUserId(userId, request.getNewPassword());
+//        otpService.clearOtp(request.getEmail());
+//
+//        return ResponseEntity.ok("Đặt lại mật khẩu thành công");
+//    }
+
 }

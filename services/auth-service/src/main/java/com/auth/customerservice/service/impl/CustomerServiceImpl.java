@@ -1,17 +1,15 @@
 package com.auth.customerservice.service.impl;
 
-import com.auth.customerservice.FeignClient.UserFeignClient;
-import com.auth.customerservice.dto.UserDTO;
+import com.auth.customerservice.dto.CustomerDTO;
 import com.auth.customerservice.entity.CustomerEntity;
 import com.auth.customerservice.model.UpdateCustomerRequest;
 import com.auth.customerservice.repository.CustomerRepository;
 import com.auth.customerservice.service.ICustomerService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,6 +50,7 @@ public class CustomerServiceImpl implements ICustomerService {
         customer.setLastName(customerUpdate.getLastName());
         customer.setPhone(customerUpdate.getPhone());
         customer.setAddress(customerUpdate.getAddress());
+        customer.setEmail(customerUpdate.getEmail());
 
         return customerRepository.save(customer);
     }
@@ -64,7 +63,13 @@ public class CustomerServiceImpl implements ICustomerService {
         customer.setLastName("");
         customer.setPhone("");
         customer.setAddress("");
-        customer.setEmail("");
+        customer.setEmail(null);
+        customer.setCreatedAt(Date.from(LocalDateTime.now().atZone(java.time.ZoneId.systemDefault()).toInstant()));
         customerRepository.save(customer);
+    }
+
+    @Override
+    public Optional<CustomerEntity> getCustomerByEmail(String email) {
+        return customerRepository.findByEmail(email);
     }
 }
