@@ -40,5 +40,15 @@ public class ProductController {
     public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable Long categoryId) {
         return ResponseEntity.ok(productService.getProductsByCategory(categoryId));
     }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDTO>> searchProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String categoryName) {
+
+        List<ProductDTO> products = productService.searchProductsByNameAndCategory(keyword, categoryName);
+        return ResponseEntity.ok(products);
+    }
 }
 

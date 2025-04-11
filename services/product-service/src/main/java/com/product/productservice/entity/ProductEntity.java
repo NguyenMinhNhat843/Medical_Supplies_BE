@@ -39,6 +39,19 @@ public class ProductEntity {
     @UpdateTimestamp
     private Date updateAt;
 
+    @Column(name = "ingredient")
+    private String ingredient;
+    @Column(name = "usage")
+    private String usage;
+    @Column(name = "howToUse")
+    private String howToUse;
+    @Column(name = "sideEffects")
+    private String sideEffects;
+    @Column(name = "caution")
+    private String caution;
+    @Column(name = "preservation")
+    private String preservation;
+
     @ManyToMany
     @JoinTable(
             name = "productcategory",
@@ -117,5 +130,53 @@ public class ProductEntity {
 
     public void setUpdateAt(Date updateAt) {
         this.updateAt = updateAt;
+    }
+
+    public String getIngredient() {
+        return ingredient;
+    }
+
+    public void setIngredient(String ingredient) {
+        this.ingredient = ingredient;
+    }
+
+    public String getUsage() {
+        return usage;
+    }
+
+    public void setUsage(String usage) {
+        this.usage = usage;
+    }
+
+    public String getHowToUse() {
+        return howToUse;
+    }
+
+    public void setHowToUse(String howToUse) {
+        this.howToUse = howToUse;
+    }
+
+    public String getSideEffects() {
+        return sideEffects;
+    }
+
+    public void setSideEffects(String sideEffects) {
+        this.sideEffects = sideEffects;
+    }
+
+    public String getCaution() {
+        return caution;
+    }
+
+    public void setCaution(String caution) {
+        this.caution = caution;
+    }
+
+    public String getPreservation() {
+        return preservation;
+    }
+
+    public void setPreservation(String preservation) {
+        this.preservation = preservation;
     }
 }

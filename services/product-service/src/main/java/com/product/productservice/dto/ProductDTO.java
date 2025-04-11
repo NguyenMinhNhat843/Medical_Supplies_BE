@@ -14,6 +14,11 @@ public class ProductDTO {
     private Double priceSupplied;
     private String image;
     private List<Long> categoryIds;
-
-
+    private List<String> categories;    // để hiển thị tên category
+    private String ingredient;
+    private String usage;
+    private String howToUse;
+    private String sideEffects;
+    private String caution;
+    private String preservation;
 }

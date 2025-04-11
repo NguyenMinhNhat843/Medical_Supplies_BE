@@ -41,6 +41,13 @@ public class CustomerEntity {
     @Column(name = "updateat")
     private Date updatedAt;
 
+    @Column(name = "gender")
+    private String gender;
+
+
+    @Column(name = "dateofbirth")
+    private Date dateOfBirth;
+
     @Column(name = "user_id")
     private Long userId;
 
@@ -114,5 +121,21 @@ public class CustomerEntity {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
 }

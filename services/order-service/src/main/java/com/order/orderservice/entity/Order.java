@@ -2,6 +2,7 @@ package com.order.orderservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CurrentTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -30,6 +31,7 @@ public class Order {
     private String shippingAddress;
 
     @Column(name = "create_at", updatable = false)
+
     private LocalDateTime createAt;
 
     @Column(name = "update_at")

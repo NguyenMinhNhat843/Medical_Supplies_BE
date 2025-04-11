@@ -29,6 +29,11 @@ public class ProductConverter {
                 .toList();
         dto.setCategoryIds(categoryIds);
         System.out.println("DEBUG DTO: " + dto);
+        // ✅ Lấy danh sách tên danh mục
+        List<String> categoryNames = product.getCategories().stream()
+                .map(CategoryEntity::getName)
+                .toList();
+        dto.setCategories(categoryNames);
 
         return dto;
     }

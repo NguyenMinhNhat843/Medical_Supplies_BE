@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@NoArgsConstructor
+
 @AllArgsConstructor
 public class CustomerDTO {
 
@@ -30,6 +30,26 @@ public class CustomerDTO {
 
     private Date updatedAt;
     private Long userId;
+
+    private String gender;
+
+    private Date dateOfBirth;
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
 
     public CustomerDTO() {
     }
