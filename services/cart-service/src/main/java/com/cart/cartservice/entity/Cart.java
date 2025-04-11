@@ -15,5 +15,9 @@ public class Cart {
 
     private Long userId;
 
-    // Không có @OneToMany ở đây (vì CartItem là service khác)
+    // ✅ Constructor cần thiết cho new Cart(userId)
+    public Cart(Long userId) {
+        this.userId = userId;
+    }
+
 }

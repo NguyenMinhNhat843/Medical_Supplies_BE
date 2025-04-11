@@ -1,6 +1,7 @@
 package com.cart.cartservice.Client;
 
 import com.cart.cartservice.dto.CartItemDTO;
+import com.cart.cartservice.dto.CartItemRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -15,6 +16,10 @@ public class CartItemClient {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    public void createCartItem(CartItemRequest request) {
+        restTemplate.postForObject(BASE_URL, request, Void.class);
+    }
 
     public List<CartItemDTO> getItemsByCartId(Long cartId) {
         String url = BASE_URL + "/cart/" + cartId;

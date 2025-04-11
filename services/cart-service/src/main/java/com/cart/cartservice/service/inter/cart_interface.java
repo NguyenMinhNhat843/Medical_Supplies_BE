@@ -1,9 +1,11 @@
 package com.cart.cartservice.service.inter;
 
+import com.cart.cartservice.dto.CartWithItems;
 import com.cart.cartservice.entity.Cart;
 
 
 public interface cart_interface {
     Cart getCartByUserId(Long userId);
     Cart createCart(Long userId);
+    CartWithItems addToCart(Long userId, Long productId, int quantity);
 }

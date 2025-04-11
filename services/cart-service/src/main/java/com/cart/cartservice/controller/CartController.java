@@ -1,15 +1,14 @@
 package com.cart.cartservice.controller;
 
 import com.cart.cartservice.Client.CartItemClient;
+import com.cart.cartservice.dto.AddToCartRequest;
 import com.cart.cartservice.dto.CartItemDTO;
+import com.cart.cartservice.dto.CartWithItems;
 import com.cart.cartservice.entity.Cart;
 import com.cart.cartservice.service.inter.cart_interface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,5 +37,15 @@ public class CartController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/api/carts/{userId}/add")
+    public ResponseEntity<?> addToCart(
+            @PathVariable Long userId,
+            @RequestBody AddToCartRequest request) {
+
+        CartWithItems response = cartService.addToCart(userId, request.getProductId(), request.getQuantity());
+        return ResponseEntity.ok(response);
+    }
+
 }
 
