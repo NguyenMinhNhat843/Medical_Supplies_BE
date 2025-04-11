@@ -12,8 +12,7 @@ spring:
     show-sql: true
   application:
     name: auth-service
-  jwt:
-    secretKey: mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM
+
 eureka:
   client:
     service-url:

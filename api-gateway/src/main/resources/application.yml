@@ -35,8 +35,7 @@ spring:
           uri: lb://REVIEW-SERVICE
           predicates:
               - Path=/reviews/**
-  jwt:
-    secretKey:  mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM
+
 eureka:
   client:
     service-url:
