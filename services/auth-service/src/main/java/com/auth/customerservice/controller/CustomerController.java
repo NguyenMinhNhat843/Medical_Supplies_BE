@@ -1,15 +1,13 @@
 package com.auth.customerservice.controller;
 
 import com.auth.customerservice.dto.CustomerDTO;
-import com.auth.customerservice.dto.CustomerEmailDTO;
 import com.auth.customerservice.entity.CustomerEntity;
 import com.auth.customerservice.model.CreateCustomerRequest;
+import com.auth.customerservice.model.CustomerInfoResponse;
 import com.auth.customerservice.model.UpdateCustomerRequest;
 import com.auth.customerservice.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -30,7 +28,7 @@ public class CustomerController {
 
     // Thông tin bản thân theo userId đăng nhập
     @GetMapping("/me")
-    public Optional<CustomerEntity> getProfile(@RequestHeader("X-UserId") Long userId) {
+    public Optional<CustomerInfoResponse> getProfile(@RequestHeader("X-UserId") Long userId) {
 //        Long userId = Long.parseLong(auth.getName());
         System.out.println("✅ Received userId from header: " + userId);
 
@@ -74,7 +72,7 @@ public class CustomerController {
     // Tạo mới khách hàng
     @PostMapping
     public ResponseEntity<Void> createCustomerInfo(@RequestBody CreateCustomerRequest request) {
-        customerService.createCustomerForUser(request.getUserId());
+        customerService.createCustomerForUser(request);
         return ResponseEntity.ok().build();
     }
 
@@ -84,10 +82,12 @@ public class CustomerController {
         return customerService.getCustomerByEmail(email)
                 .map(entity -> {
                     CustomerDTO dto = new CustomerDTO();
-                    dto.setUserId(entity.getUserId());   // ✅ Đảm bảo userId chính là account.id
-                    dto.setEmail(entity.getEmail());     // ✅ Email vẫn cần để khớp
+                    dto.setUserId(entity.getUserId());
+                    dto.setEmail(entity.getEmail());
                     return ResponseEntity.ok(dto);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+
 }

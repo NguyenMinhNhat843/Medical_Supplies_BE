@@ -23,11 +23,14 @@ public class OrderController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Integer id) {
+        System.out.println("Order ID: " + id);
         Optional<Order> order = orderService.getOrderById(id);
+
+        System.out.println("Order: " + order);
         return order.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/customer/{customerId}")
+    @GetMapping("/order/{customerId}")
     public List<Order> getOrdersByCustomerId(@PathVariable Integer customerId) {
         return orderService.getOrdersByCustomerId(customerId);
     }

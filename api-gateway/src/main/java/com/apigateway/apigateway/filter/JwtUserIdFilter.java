@@ -22,14 +22,11 @@ public class JwtUserIdFilter implements GlobalFilter {
                 .map(JwtAuthenticationToken::getToken)
                 .map(jwt -> jwt.getSubject()) // Hoặc jwt.getClaim("userId") nếu dùng custom claim
                 .flatMap(userId -> {
-                    // ✅ In log để kiểm tra userId
                     System.out.println("✅ userId from token: " + userId);
-
                     ServerHttpRequest mutatedRequest = exchange.getRequest()
                             .mutate()
                             .header("X-UserId", userId)
                             .build();
-
                     ServerWebExchange mutatedExchange = exchange.mutate()
                             .request(mutatedRequest)
                             .build();

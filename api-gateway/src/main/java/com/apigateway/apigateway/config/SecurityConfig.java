@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .pathMatchers("/users/**").permitAll() // Cho phép user
                         .pathMatchers("/api/products/**").permitAll() // Cho phép product
                         .pathMatchers("/api/category/**").permitAll() // Cho phép order
+                        .pathMatchers("/api/orders/**").permitAll() // Cho phép order
                         .anyExchange().authenticated()         // Còn lại yêu cầu xác thực
                 )
                 // ⚠️ Đặt sau permitAll, JWT chỉ xử lý phần cần authenticated

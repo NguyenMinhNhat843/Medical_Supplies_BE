@@ -21,6 +21,7 @@ public class OrdersService implements orders_interface {
 
     @Override
     public Optional<Order> getOrderById(Integer id) {
+        System.out.println("Fetching order with ID: " + id);
         return orderRepository.findById(id);
     }
 

@@ -131,11 +131,13 @@ public class UserServiceImpl implements IUserService {
         userRepository.save(userEntity);
         CreateCustomerRequest createCustomerRequest = new CreateCustomerRequest();
         createCustomerRequest.setUserId(userEntity.getId());
+        createCustomerRequest.setEmail(userRegisterRequest.getEmail());
+
         try {
             restTemplate.postForObject("http://AUTH-SERVICE/users", createCustomerRequest, Void.class);
             System.out.println("✅ Đã gọi user-service tạo CustomerInfo cho userId: " + userEntity.getId());
         } catch (Exception e) {
-            System.err.println("❌ Gọi user-service thất bại: " + e.getMessage());
+            System.err.println("Gọi user-service thất bại: " + e.getMessage());
         }
     }
 }
