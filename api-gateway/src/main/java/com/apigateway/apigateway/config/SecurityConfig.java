@@ -24,13 +24,15 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/auth/**", "/users/**"))
+                .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/auth/**", "/users/**",
+                        "/reviews/**"))
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/**").permitAll() // Cho phép toàn bộ auth
                         .pathMatchers("/users/**").permitAll() // Cho phép user
                         .pathMatchers("/api/products/**").permitAll() // Cho phép product
                         .pathMatchers("/api/category/**").permitAll() // Cho phép order
                         .pathMatchers("/api/orders/**").permitAll() // Cho phép order
+                        .pathMatchers("/reviews/**").permitAll() // ✅ Yêu cầu xác thực!
                         .anyExchange().authenticated()         // Còn lại yêu cầu xác thực
                 )
                 // ⚠️ Đặt sau permitAll, JWT chỉ xử lý phần cần authenticated
