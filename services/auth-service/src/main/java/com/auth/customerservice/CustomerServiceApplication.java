@@ -1,13 +1,13 @@
-package com.auth.authservice;
+package com.auth.customerservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AuthServiceApplication {
+public class CustomerServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AuthServiceApplication.class, args);
+		SpringApplication.run(CustomerServiceApplication.class, args);
 	}
 
 }

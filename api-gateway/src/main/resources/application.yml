@@ -4,26 +4,39 @@ server:
 spring:
   application:
     name: api-gateway  # Tên service khi đăng ký với Eureka
-
   cloud:
     gateway:
       routes:
         - id: auth-service
           uri: lb://AUTH-SERVICE
           predicates:
-            - Path=/auth/**
+            - Path=/users/**
         - id: product-service
           uri: lb://PRODUCT-SERVICE
           predicates:
-            - Path=/products/**
+            - Path=/api/products/**
+        - id:  category-route
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/api/category/**
         - id: order-service
           uri: lb://ORDER-SERVICE
           predicates:
             - Path=/orders/**
-
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+              - Path=/auth/**
+  jwt:
+    secretKey:  mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/  # Địa chỉ của Eureka Server
     register-with-eureka: true
     fetch-registry: true
+
+spring.main.web-application-type: reactive
+logging:
+  level:
+    org.springframework.security: DEBUG
