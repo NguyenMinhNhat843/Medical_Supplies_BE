@@ -15,4 +15,7 @@ public interface IProductService {
     List<ProductDTO> searchProductsByName(String name);
 
     List<ProductDTO> searchProductsByNameAndCategory(String keyword, String categoryName);
+
+    List<ProductDTO> searchProductsByKeyword(String keyword);
+
 }

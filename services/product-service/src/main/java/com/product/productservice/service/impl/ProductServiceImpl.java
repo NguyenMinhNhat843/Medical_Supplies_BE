@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -133,6 +130,30 @@ public class ProductServiceImpl implements IProductService {
         return products.stream()
                 .map(productConverter::convertToDto)
                 .toList();
+    }
+
+    @Override
+    public List<ProductDTO> searchProductsByKeyword(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        // Normalize và tách từ
+        String normalized = keyword.toLowerCase().replaceAll("[^\\p{L}\\p{Nd}\\s]", "");
+        List<String> terms = Arrays.stream(normalized.split("\\s+"))
+                .filter(term -> term.length() > 1)
+                .toList();
+
+        return productRepository.findAll().stream()
+                .filter(product -> {
+                    String name = product.getName().toLowerCase();
+                    String desc = product.getDescription().toLowerCase();
+
+                    return terms.stream().anyMatch(term ->
+                            name.contains(term) || desc.contains(term));
+                })
+                .map(productConverter::convertToDto)
+                .collect(Collectors.toList());
     }
 }
 

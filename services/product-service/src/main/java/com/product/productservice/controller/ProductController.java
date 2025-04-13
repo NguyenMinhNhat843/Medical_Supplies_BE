@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -49,6 +51,14 @@ public class ProductController {
 
         List<ProductDTO> products = productService.searchProductsByNameAndCategory(keyword, categoryName);
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/ai/search")
+    public ResponseEntity<List<ProductDTO>> searchByKeyword(@RequestParam String keyword) {
+        String decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
+        System.out.println("📥 Từ khóa đã decode: " + decodedKeyword);
+        List<ProductDTO> results = productService.searchProductsByKeyword(decodedKeyword);
+        return ResponseEntity.ok(results);
     }
 }
 

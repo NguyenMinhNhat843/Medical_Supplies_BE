@@ -25,7 +25,7 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/auth/**", "/users/**",
-                        "/reviews/**"))
+                        "/reviews/**","/chat/**"))
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/**").permitAll() // Cho phép toàn bộ auth
                         .pathMatchers("/users/**").permitAll() // Cho phép user
@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/category/**").permitAll() // Cho phép order
                         .pathMatchers("/api/orders/**").permitAll() // Cho phép order
                         .pathMatchers("/reviews/**").permitAll() // ✅ Yêu cầu xác thực!
+                        .pathMatchers("/chat/**").permitAll() // ✅ Yêu cầu xác thực!
                         .anyExchange().authenticated()         // Còn lại yêu cầu xác thực
                 )
                 // ⚠️ Đặt sau permitAll, JWT chỉ xử lý phần cần authenticated
