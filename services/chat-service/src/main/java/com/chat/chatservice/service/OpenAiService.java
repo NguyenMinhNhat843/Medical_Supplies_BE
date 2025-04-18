@@ -33,14 +33,10 @@ public class OpenAiService {
         this.chatRepository = chatRepository;
     }
 
-    public Map<String, Object> ask(String userMessage, Long userId) {
-        // Gửi câu hỏi sang product-service
+    public Map<String, Object> ask(String userMessage) {
         List<ProductDTO> matchingProducts = fetchMatchingProducts(userMessage);
         boolean isProductRelated = !matchingProducts.isEmpty();
 
-        System.out.println("✅ Số sản phẩm phù hợp: " + matchingProducts.size());
-
-        // Nếu có sản phẩm → đưa vào prompt
         StringBuilder productInfo = new StringBuilder();
         if (isProductRelated) {
             productInfo.append("Sản phẩm liên quan:");
@@ -52,10 +48,8 @@ public class OpenAiService {
             }
         }
 
-
         String prompt = userMessage + (isProductRelated ? "\n\n" + productInfo : "");
 
-        // Gọi OpenAI
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", "Bearer " + openaiApiKey);
@@ -80,25 +74,15 @@ public class OpenAiService {
 
         String aiResponse = message.get("content").toString();
 
-        // Lưu lịch sử
-        ChatEntity chat = new ChatEntity();
-        chat.setUserId(userId);
-        chat.setQuestion(userMessage);
-        chat.setAnswer(aiResponse);
-        chatRepository.save(chat);
-
-        // Trả kết quả
         Map<String, Object> result = new HashMap<>();
         result.put("answer", aiResponse);
         if (isProductRelated) {
             result.put("products", matchingProducts);
-            System.out.println("✅ Gửi kèm sản phẩm: " + matchingProducts.size());
-        } else {
-            System.out.println("⚠️ Không có sản phẩm liên quan.");
         }
 
         return result;
     }
+
 
     private List<ProductDTO> fetchMatchingProducts(String userMessage) {
         String searchKeyword = userMessage.toLowerCase().trim();

@@ -23,17 +23,16 @@ public class ChatController {
 
 
     @PostMapping("/ask")
-    public ResponseEntity<Map<String, Object>> askChat(@RequestHeader("X-UserId") Long userId,
-                                                       @RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, Object>> askChat(@RequestBody Map<String, String> request) {
         String userMessage = request.get("message");
-        Map<String, Object> response = openAiService.ask(userMessage, userId);
+        Map<String, Object> response = openAiService.ask(userMessage);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/history")
-    public ResponseEntity<List<ChatEntity>> getChatHistory(@RequestHeader("X-UserId") Long userId) {
-        List<ChatEntity> history = chatRepository.findByUserId(userId);
-        return ResponseEntity.ok(history);
-    }
+//    @GetMapping("/history")
+//    public ResponseEntity<List<ChatEntity>> getChatHistory(@RequestHeader("X-UserId") Long userId) {
+//        List<ChatEntity> history = chatRepository.findByUserId(userId);
+//        return ResponseEntity.ok(history);
+//    }
 }
 
