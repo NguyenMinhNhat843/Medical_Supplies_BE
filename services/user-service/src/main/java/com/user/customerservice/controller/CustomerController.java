@@ -2,6 +2,7 @@ package com.user.customerservice.controller;
 
 import com.user.customerservice.dto.CustomerDTO;
 import com.user.customerservice.entity.CustomerEntity;
+import com.user.customerservice.model.CreateAddressRequest;
 import com.user.customerservice.model.CreateCustomerRequest;
 import com.user.customerservice.model.CustomerInfoResponse;
 import com.user.customerservice.model.UpdateCustomerRequest;
@@ -87,6 +88,12 @@ public class CustomerController {
                     return ResponseEntity.ok(dto);
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/update/address")
+    public ResponseEntity<String> updateAddress(@RequestHeader("X-UserId") Long userId, @RequestBody CreateAddressRequest request) {
+        customerService.CreateOrUpdateCustomerAddess(userId, request);
+        return ResponseEntity.ok("Cập nhật địa chỉ thành công!");
     }
 
 

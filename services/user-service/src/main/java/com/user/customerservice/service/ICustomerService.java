@@ -1,6 +1,7 @@
 package com.user.customerservice.service;
 
 import com.user.customerservice.entity.CustomerEntity;
+import com.user.customerservice.model.CreateAddressRequest;
 import com.user.customerservice.model.CreateCustomerRequest;
 import com.user.customerservice.model.CustomerInfoResponse;
 import com.user.customerservice.model.UpdateCustomerRequest;
@@ -21,5 +22,6 @@ public interface ICustomerService {
 
     Optional<CustomerEntity> getCustomerByEmail(String email);
 
+    CustomerEntity CreateOrUpdateCustomerAddess(Long userId, CreateAddressRequest request);
 
 }

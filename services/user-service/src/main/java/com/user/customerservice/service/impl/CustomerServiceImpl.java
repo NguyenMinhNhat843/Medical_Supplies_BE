@@ -2,6 +2,7 @@ package com.user.customerservice.service.impl;
 
 import com.user.customerservice.converter.CustomerConverter;
 import com.user.customerservice.entity.CustomerEntity;
+import com.user.customerservice.model.CreateAddressRequest;
 import com.user.customerservice.model.CreateCustomerRequest;
 import com.user.customerservice.model.CustomerInfoResponse;
 import com.user.customerservice.model.UpdateCustomerRequest;
@@ -92,6 +93,17 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     public Optional<CustomerEntity> getCustomerByEmail(String email) {
         return customerRepository.findByEmail(email);
+    }
+
+    @Override
+    public CustomerEntity CreateOrUpdateCustomerAddess(Long userId, CreateAddressRequest request) {
+        CustomerEntity customer = customerRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Customer not found with userId: " + userId));
+
+        String address = customerConverter.buildAddress(request);
+        customer.setAddress(address);
+        customerRepository.save(customer);
+        return customer;
     }
 
 
