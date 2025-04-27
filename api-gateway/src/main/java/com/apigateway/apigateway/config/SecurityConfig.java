@@ -32,8 +32,10 @@ public class SecurityConfig {
                         .pathMatchers("/api/products/**").permitAll() // Cho phép product
                         .pathMatchers("/api/category/**").permitAll() // Cho phép order
                         .pathMatchers("/api/orders/**").permitAll() // Cho phép order
-                        .pathMatchers("/reviews/**").permitAll() // ✅ Yêu cầu xác thực!
-                        .pathMatchers("/chat/**").permitAll() // ✅ Yêu cầu xác thực!
+                        .pathMatchers("/reviews/**").permitAll() //
+                        .pathMatchers("/chat/**").permitAll() //
+                        .pathMatchers("/api/carts").permitAll()
+                        .pathMatchers("/api/cart-items/**").permitAll() // Cho phép cart
                         .anyExchange().authenticated()         // Còn lại yêu cầu xác thực
                 )
                 // ⚠️ Đặt sau permitAll, JWT chỉ xử lý phần cần authenticated

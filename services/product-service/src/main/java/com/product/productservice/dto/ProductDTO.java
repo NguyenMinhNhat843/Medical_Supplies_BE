@@ -16,9 +16,15 @@ public class ProductDTO {
     private List<Long> categoryIds;
     private List<String> categories;    // để hiển thị tên category
     private String ingredient;
-    private String usage;
+    private String usageProduct;
     private String howToUse;
     private String sideEffects;
     private String caution;
     private String preservation;
+    private String specifications;
+    private String brandOrigin;
+    private String manufacturer;
+    private String manufacturingCountry;
+    private Long sales;
+    private Long likes;
 }

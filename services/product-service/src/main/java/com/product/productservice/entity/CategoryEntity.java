@@ -20,6 +20,9 @@ public class CategoryEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "image")
+    private String image;
+
     @ManyToMany(mappedBy = "categories")
     private List<ProductEntity> products = new ArrayList<>();
 
@@ -30,6 +33,15 @@ public class CategoryEntity {
 
     public void setProducts(List<ProductEntity> products) {
         this.products = products;
+    }
+
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Long getId() {

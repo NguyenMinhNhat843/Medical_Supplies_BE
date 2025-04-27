@@ -96,6 +96,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public String login(String username, String password) throws Exception {
         Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+        System.out.println("UserEntity: " + userEntity);
         if(userEntity.isEmpty()){
             throw new MyException("Invalid phone number / password");
         }

@@ -41,8 +41,8 @@ public class ProductEntity {
 
     @Column(name = "ingredient")
     private String ingredient;
-    @Column(name = "usage")
-    private String usage;
+    @Column(name = "usageProduct")
+    private String usageProduct;
     @Column(name = "howToUse")
     private String howToUse;
     @Column(name = "sideEffects")
@@ -52,6 +52,24 @@ public class ProductEntity {
     @Column(name = "preservation")
     private String preservation;
 
+    @Column(name = "specifications")
+    private String specifications;
+
+    @Column(name = "brandOrigin")
+    private String brandOrigin;
+
+    @Column(name = "manufacturer")
+    private String manufacturer;
+
+    @Column(name = "manufacturingCountry")
+    private String manufacturingCountry;
+
+    @Column(name = "sales")
+    private Long sales;
+
+    @Column(name = "likes")
+    private Long likes;
+
     @ManyToMany
     @JoinTable(
             name = "productcategory",
@@ -59,6 +77,59 @@ public class ProductEntity {
             inverseJoinColumns = @JoinColumn(name = "categoryid")
     )
     private List<CategoryEntity> categories = new ArrayList<>();
+
+
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public Long getSales() {
+        return sales;
+    }
+
+    public void setSales(Long sales) {
+        this.sales = sales;
+    }
+
+    public Long getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Long likes) {
+        this.likes = likes;
+    }
+
+    public String getSpecifications() {
+        return specifications;
+    }
+
+    public void setSpecifications(String specifications) {
+        this.specifications = specifications;
+    }
+
+    public String getBrandOrigin() {
+        return brandOrigin;
+    }
+
+    public void setBrandOrigin(String brandOrigin) {
+        this.brandOrigin = brandOrigin;
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturerr(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public String getManufacturingCountry() {
+        return manufacturingCountry;
+    }
+
+    public void setManufacturingCountry(String manufacturingCountry) {
+        this.manufacturingCountry = manufacturingCountry;
+    }
 
     public List<CategoryEntity> getCategories() {
         return categories;
@@ -140,12 +211,12 @@ public class ProductEntity {
         this.ingredient = ingredient;
     }
 
-    public String getUsage() {
-        return usage;
+    public String getUsageProduct() {
+        return usageProduct;
     }
 
-    public void setUsage(String usage) {
-        this.usage = usage;
+    public void setUsageProduct(String usageProduct) {
+        this.usageProduct = usageProduct;
     }
 
     public String getHowToUse() {
