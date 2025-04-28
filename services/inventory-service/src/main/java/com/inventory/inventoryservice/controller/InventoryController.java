@@ -51,10 +51,10 @@ public class InventoryController {
     }
 
     // Tìm sản phẩm theo tên người dùng (username)
-    @GetMapping("/username/{username}")
-    public ResponseEntity<Inventory> getInventoryByUsername(@PathVariable("username") String username) {
-        Optional<Inventory> inventory = inventoryService.getInventoryByUsername(username);
-        return inventory.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                        .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
+//    @GetMapping("/username/{username}")
+//    public ResponseEntity<Inventory> getInventoryByUsername(@PathVariable("username") String username) {
+//        Optional<Inventory> inventory = inventoryService.getInventoryByUsername(username);
+//        return inventory.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+//                        .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+//    }
 }

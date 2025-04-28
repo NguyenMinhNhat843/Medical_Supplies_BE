@@ -1,5 +1,8 @@
 spring:
-    application:
-        name: admin-dashboard-service
+  application:
+    name: admin-dashboard-service
+  config:
+    import: "optional:configserver:"
+  cloud:
     config:
-        import: "optional:configserver:"
+      uri: http://config-server:8888

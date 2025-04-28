@@ -1,5 +1,8 @@
 spring:
-    application:
-        name: inventory-service
+  application:
+    name: inventory-service
+  config:
+    import: "optional:configserver:"
+  cloud:
     config:
-        import: "optional:configserver:"
+      uri: http://config-server:8888

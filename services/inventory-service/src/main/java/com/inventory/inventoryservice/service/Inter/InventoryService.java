@@ -9,5 +9,5 @@ public interface InventoryService {
     Optional<Inventory> getProductById(Long id); // Lấy sản phẩm theo ID
     Inventory saveProduct(Inventory inventory); // Lưu sản phẩm vào cơ sở dữ liệu
     void deleteProduct(Long id); // Xóa sản phẩm theo ID
-    Optional<Inventory> getInventoryByUsername(String username); // Tìm sản phẩm theo username
+//    Optional<Inventory> getInventoryByUsername(String username); // Tìm sản phẩm theo username
 }

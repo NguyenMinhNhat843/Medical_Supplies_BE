@@ -39,8 +39,8 @@ public class InventoryServiceImpl implements InventoryService {
         inventoryRepository.deleteById(id); // Xóa sản phẩm theo ID
     }
 
-    @Override
-    public Optional<Inventory> getInventoryByUsername(String username) {
-        return inventoryRepository.findByUsername(username); // Tìm sản phẩm theo username
-    }
+//    @Override
+//    public Optional<Inventory> getInventoryByUsername(String username) {
+//        return inventoryRepository.findByUsername(username); // Tìm sản phẩm theo username
+//    }
 }
