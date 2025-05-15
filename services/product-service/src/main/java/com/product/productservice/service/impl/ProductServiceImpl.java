@@ -9,10 +9,12 @@ import com.product.productservice.repository.ProductRepository;
 import com.product.productservice.repository.repositorycustom.ProuductRepositoryCustom;
 import com.product.productservice.repository.repositorycustom.impl.ProductRepositoryCustomImpl;
 import com.product.productservice.service.IProductService;
+import com.product.productservice.utils.UploadFileUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.apache.commons.codec.binary.Base64;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,20 +33,34 @@ public class ProductServiceImpl implements IProductService {
 
     @Autowired
     private ProductConverter productConverter;
+
+    @Autowired
+    private UploadFileUtils uploadFileUtils;
     @Override
     public ProductDTO createOrUpdateProduct(ProductDTO productDto)
     {
         ProductEntity product;
+
         if (productDto.getId() != null) {
-            Optional<ProductEntity> existing = productRepository.findById(productDto.getId());
-            if (existing.isPresent()) {
-                product = productConverter.toEntity(productDto, existing.get());
-            } else {
-                throw new IllegalArgumentException("Product with ID " + productDto.getId() + " not found");
-            }
+            product = productRepository.findById(productDto.getId())
+                    .map(existing -> productConverter.toEntity(productDto, existing))
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found"));
         } else {
             product = productConverter.toEntity(productDto);
         }
+
+
+        if (productDto.getImageBase64() != null && productDto.getImageName() != null) {
+            String path = "/product/" + productDto.getImageName();
+            if (product.getImage() != null && !path.equals(product.getImage())) {
+                uploadFileUtils.deleteFile(product.getImage());
+            }
+
+            byte[] bytes = Base64.decodeBase64(productDto.getImageBase64().getBytes());
+            uploadFileUtils.writeOrUpdate(path, bytes);
+            product.setImage(path);
+        }
+
         return productConverter.convertToDto(productRepository.save(product));
     }
 
