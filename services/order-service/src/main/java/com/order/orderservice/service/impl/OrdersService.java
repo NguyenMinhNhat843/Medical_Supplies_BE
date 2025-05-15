@@ -1,11 +1,16 @@
 package com.order.orderservice.service.impl;
 
+import com.order.orderservice.client.CartClient;
+import com.order.orderservice.dto.CartWithItemsDTO;
 import com.order.orderservice.entity.Order;
+import com.order.orderservice.entity.OrderItem;
+import com.order.orderservice.repository.OrderItemRepository;
 import com.order.orderservice.repository.OrderRepository;
 import com.order.orderservice.service.inter.orders_interface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +18,12 @@ import java.util.Optional;
 public class OrdersService implements orders_interface {
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private CartClient cartClient;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
 
     @Override
     public List<Order> getAllOrders() {
@@ -53,4 +64,36 @@ public class OrdersService implements orders_interface {
         }
         return false;
     }
+
+    @Override
+    public Order createOrderFromCart(Long userId) {
+        CartWithItemsDTO cart = cartClient.getCartWithDetails(userId);
+        if (cart == null || cart.getItems().isEmpty()) {
+            throw new RuntimeException("Giỏ hàng trống hoặc không tồn tại");
+        }
+
+        Order order = Order.builder()
+                .customerId(userId.intValue())
+                .orderDate(LocalDateTime.now())
+                .status("PENDING")
+                .shippingAddress("Địa chỉ mặc định")
+                .build();
+
+        Order savedOrder = orderRepository.save(order);
+
+        List<OrderItem> items = cart.getItems().stream().map(item -> OrderItem.builder()
+                .order(savedOrder)
+                .productId(item.getProduct().getId())
+                .productName(item.getProduct().getName())
+                .priceAtTimeOfPurchase(item.getProduct().getPrice())
+                .quantity(item.getQuantity())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build()).toList();
+
+        orderItemRepository.saveAll(items);
+
+        return savedOrder;
+    }
+
 }

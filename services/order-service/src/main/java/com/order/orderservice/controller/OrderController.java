@@ -57,4 +57,11 @@ public class OrderController {
                     .body("Không tìm thấy đơn hàng có ID " + id);
         }
     }
+
+    @PostMapping("/from-cart/{userId}")
+    public ResponseEntity<Order> createOrderFromCart(@PathVariable Long userId) {
+        Order order = orderService.createOrderFromCart(userId);
+        return ResponseEntity.ok(order);
+    }
+
 }

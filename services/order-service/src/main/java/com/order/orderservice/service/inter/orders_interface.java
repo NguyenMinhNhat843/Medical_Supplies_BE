@@ -17,4 +17,6 @@ public interface orders_interface {
     Order updateOrder(Integer id, Order updatedOrder);
 
     boolean deleteOrder(Integer id);
+
+    Order createOrderFromCart(Long userId);
 }

@@ -31,7 +31,6 @@ public class Order {
     private String shippingAddress;
 
     @Column(name = "create_at", updatable = false)
-
     private LocalDateTime createAt;
 
     @Column(name = "update_at")
