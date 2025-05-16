@@ -81,6 +81,14 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
             }
         }
 
+        if (StringUtils.hasText(request.getSortByPrice())) {
+            if (request.getSortByPrice().equalsIgnoreCase("asc")) {
+                sql.append(" ORDER BY p.price ASC ");
+            } else if (request.getSortByPrice().equalsIgnoreCase("desc")) {
+                sql.append(" ORDER BY p.price DESC ");
+            }
+        }
+
         Query query = entityManager.createNativeQuery(sql.toString(), ProductEntity.class);
 
         if (StringUtils.hasText(request.getCategoryName())) {
