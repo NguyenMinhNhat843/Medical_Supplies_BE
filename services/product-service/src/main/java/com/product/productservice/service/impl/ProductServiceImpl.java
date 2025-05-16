@@ -8,11 +8,9 @@ import com.product.productservice.models.ProductSearchRequest;
 import com.product.productservice.models.ProductSpecification;
 import com.product.productservice.repository.CategoryRepository;
 import com.product.productservice.repository.ProductRepository;
-import com.product.productservice.repository.repositorycustom.ProuductRepositoryCustom;
-import com.product.productservice.repository.repositorycustom.impl.ProductRepositoryCustomImpl;
+import com.product.productservice.repository.repositorycustom.ProductRepositoryCustom;
 import com.product.productservice.service.IProductService;
 import com.product.productservice.utils.UploadFileUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -32,7 +30,7 @@ public class ProductServiceImpl implements IProductService {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private ProuductRepositoryCustom productRepositoryCustomImpl;
+    private ProductRepositoryCustom productRepositoryCustomImpl;
 
     @Autowired
     private ProductConverter productConverter;
@@ -177,11 +175,14 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<ProductDTO> advancedSearchProducts(ProductSearchRequest request) {
-        Specification<ProductEntity> spec = ProductSpecification.build(request);
-        return productRepository.findAll(spec)
-                .stream()
-                .map(productConverter::convertToDto)
-                .toList();
+        List<ProductEntity> products = productRepository.advancedSearch(request);
+        return products.stream().map(productConverter::convertToDto).toList();
+    }
+
+    // Get filter options for advanced search
+    @Override
+    public Map<String, List<String>> getFilterOptions() {
+        return productRepository.getFilterOptions();
     }
 }
 

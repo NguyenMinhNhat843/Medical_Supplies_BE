@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/products")
@@ -81,6 +82,11 @@ public class ProductController {
         System.out.println("📥 Từ khóa đã decode: " + decodedKeyword);
         List<ProductDTO> results = productService.searchProductsByKeyword(decodedKeyword);
         return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/filters")
+    public ResponseEntity<Map<String, List<String>>> getFilters() {
+        return ResponseEntity.ok(productService.getFilterOptions());
     }
 }
 

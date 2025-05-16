@@ -11,4 +11,5 @@ public class ProductSearchRequest {
     private String manufacturer;
     private String manufacturingCountry;
     private String priceRange; // "100000-300000"
+    private String brandOrigin;
 }
