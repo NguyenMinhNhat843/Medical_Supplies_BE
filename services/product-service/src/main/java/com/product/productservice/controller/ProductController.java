@@ -3,6 +3,7 @@ package com.product.productservice.controller;
 import com.product.productservice.dto.ProductDTO;
 import com.product.productservice.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,13 +18,29 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
+//    @PostMapping("/create")
+//    public ResponseEntity<ProductDTO> createOrUpdate(@RequestBody ProductDTO productDto) {
+//        return ResponseEntity.ok(productService.createOrUpdateProduct(productDto));
+//    }
+
+    // Admin có quyền tạo sản phẩm
     @PostMapping("/create")
-    public ResponseEntity<ProductDTO> createOrUpdate(@RequestBody ProductDTO productDto) {
-        return ResponseEntity.ok(productService.createOrUpdateProduct(productDto));
-    }
+    public ResponseEntity<ProductDTO> createOrUpdate(
+            @RequestHeader("X-Role") String role,
+            @RequestBody ProductDTO productDto
+    ) {
+        if (!"ADMIN".equalsIgnoreCase(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // hoặc throw AccessDeniedException
+        }
+
+    return ResponseEntity.ok(productService.createOrUpdateProduct(productDto));
+}
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@RequestHeader("X-Role") String role, @PathVariable Long id) {
+        if (!"ADMIN".equalsIgnoreCase(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }

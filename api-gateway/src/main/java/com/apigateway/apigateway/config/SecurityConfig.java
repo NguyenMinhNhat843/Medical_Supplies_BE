@@ -25,7 +25,7 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/auth/**", "/users/**",
-                        "/reviews/**","/chat/**"))
+                        "/reviews/**","/chat/**","/api/products/**"))
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/**").permitAll() // Cho phép toàn bộ auth
                         .pathMatchers("/users/**").permitAll() // Cho phép user
