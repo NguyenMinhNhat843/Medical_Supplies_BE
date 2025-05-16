@@ -7,10 +7,7 @@ import com.auth.authservice.exception.MyException;
 import com.auth.authservice.model.dto.CustomerEmailDTO;
 import com.auth.authservice.model.dto.PasswordDTO;
 import com.auth.authservice.model.dto.UserDTO;
-import com.auth.authservice.model.request.RequestOtpRequest;
-import com.auth.authservice.model.request.ResetPasswordRequest;
-import com.auth.authservice.model.request.UserRegisterRequest;
-import com.auth.authservice.model.request.VerifyOtpRequest;
+import com.auth.authservice.model.request.*;
 import com.auth.authservice.repository.IUserRepository;
 import com.auth.authservice.service.IUserService;
 import com.auth.authservice.service.serviceImpl.EmailService;
@@ -19,8 +16,12 @@ import com.auth.authservice.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +38,8 @@ public class UserController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private IUserRepository userRepository;
@@ -131,4 +134,27 @@ public class UserController {
         return ResponseEntity.ok("Đặt lại mật khẩu thành công");
     }
 
+
+    @GetMapping("/accounts/check-username")
+    public ResponseEntity<Boolean> checkUsername(@RequestParam String username) {
+        boolean exists = userRepository.findByUsername(username).isPresent();
+        return ResponseEntity.ok(exists);
+    }
+
+    @PostMapping("/accounts")
+    public ResponseEntity<Long> createAccount(@RequestBody CreateAccountRequest request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null); // đã tồn tại
+        }
+
+        UserEntity account = new UserEntity();
+        account.setUsername(request.getUsername());
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        account.setRole(request.getRole());
+        account.setCreateAt(Date.from(LocalDateTime.now().atZone(java.time.ZoneId.systemDefault()).toInstant()));
+        account.setUpdateAt(Date.from(LocalDateTime.now().atZone(java.time.ZoneId.systemDefault()).toInstant()));
+
+        userRepository.save(account);
+        return ResponseEntity.ok(account.getId());
+    }
 }

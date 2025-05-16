@@ -2,14 +2,18 @@ package com.user.customerservice.service.impl;
 
 import com.user.customerservice.converter.CustomerConverter;
 import com.user.customerservice.entity.CustomerEntity;
-import com.user.customerservice.model.CreateAddressRequest;
-import com.user.customerservice.model.CreateCustomerRequest;
-import com.user.customerservice.model.CustomerInfoResponse;
-import com.user.customerservice.model.UpdateCustomerRequest;
+import com.user.customerservice.model.*;
 import com.user.customerservice.repository.CustomerRepository;
 import com.user.customerservice.service.ICustomerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -18,6 +22,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+
 public class CustomerServiceImpl implements ICustomerService {
 
     @Autowired
@@ -25,7 +31,11 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Autowired
     private CustomerConverter customerConverter;
+    @Autowired
+    private RestTemplate restTemplate;
 
+    @Value("${auth-service.url}")
+    private String authServiceUrl;
     private String extractFirstName(String fullName) {
         String[] parts = fullName.trim().split("\\s+");
         return parts.length > 1 ? parts[parts.length - 1] : fullName;
@@ -104,6 +114,68 @@ public class CustomerServiceImpl implements ICustomerService {
         customer.setAddress(address);
         customerRepository.save(customer);
         return customer;
+    }
+
+    @Override
+    public void register(UserRegisterRequest request) {
+        String baseUsername = request.getEmail().split("@")[0];
+        String finalUsername = baseUsername;
+        // Kiểm tra username đã tồn tại chưa
+        int suffix = 1;
+        while (checkUsernameExists(finalUsername)) {
+            finalUsername = baseUsername + "_" + suffix++;
+        }
+
+        // Gọi auth-service để tạo account
+        CreateAccountRequest createAccountReq = new CreateAccountRequest(
+                finalUsername,
+                request.getPassword(),
+                request.getRole().toUpperCase()
+        );
+        // Lấy header để gửi request
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<CreateAccountRequest> entity = new HttpEntity<>(createAccountReq, headers);
+
+        ResponseEntity<Long> response = restTemplate.postForEntity(
+                authServiceUrl + "/auth/accounts",
+                entity,
+                Long.class
+        );
+
+        Long accountId = response.getBody();
+
+        // Tách tên
+        String[] parts = request.getFullName().trim().split(" ");
+        String firstName = parts[parts.length - 1];
+        String lastName = String.join(" ", Arrays.copyOf(parts, parts.length - 1));
+
+        // Lưu vào CustomerInfo
+        CustomerEntity info = new CustomerEntity();
+        info.setFirstName(firstName);
+        info.setLastName(lastName);
+        info.setEmail(request.getEmail());
+        info.setPhone(request.getPhone());
+        info.setAddress(request.getAddress());
+        info.setUserId(accountId);
+        info.setCreatedAt(Date.from(LocalDateTime.now().atZone(java.time.ZoneId.systemDefault()).toInstant()));
+        info.setUpdatedAt(Date.from(LocalDateTime.now().atZone(java.time.ZoneId.systemDefault()).toInstant()));
+
+        customerRepository.save(info);
+
+        System.out.println("Đã tạo nhân viên và có username là: " + finalUsername);
+    }
+
+    private boolean checkUsernameExists(String username) {
+        try {
+            ResponseEntity<Boolean> response = restTemplate.getForEntity(
+                    authServiceUrl + "/auth/accounts/check-username?username=" + username,
+                    Boolean.class
+            );
+            return response.getBody() != null && response.getBody();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 

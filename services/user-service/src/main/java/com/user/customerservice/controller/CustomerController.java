@@ -2,12 +2,10 @@ package com.user.customerservice.controller;
 
 import com.user.customerservice.dto.CustomerDTO;
 import com.user.customerservice.entity.CustomerEntity;
-import com.user.customerservice.model.CreateAddressRequest;
-import com.user.customerservice.model.CreateCustomerRequest;
-import com.user.customerservice.model.CustomerInfoResponse;
-import com.user.customerservice.model.UpdateCustomerRequest;
+import com.user.customerservice.model.*;
 import com.user.customerservice.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,17 +63,17 @@ public class CustomerController {
         customerService.deleteCustomer(customerId);
     }
 
-    @PutMapping("/add/{userId}")
-    public CustomerEntity updateCustomer(@PathVariable Long userId, @RequestBody UpdateCustomerRequest customer) {
-        return customerService.updateCustomer(userId, customer);
-    }
+//    @PutMapping("/add/{userId}")
+//    public CustomerEntity updateCustomer(@PathVariable Long userId, @RequestBody UpdateCustomerRequest customer) {
+//        return customerService.updateCustomer(userId, customer);
+//    }
 
     // Tạo mới khách hàng
-    @PostMapping
-    public ResponseEntity<Void> createCustomerInfo(@RequestBody CreateCustomerRequest request) {
-        customerService.createCustomerForUser(request);
-        return ResponseEntity.ok().build();
-    }
+//    @PostMapping
+//    public ResponseEntity<Void> createCustomerInfo(@RequestBody CreateCustomerRequest request) {
+//        customerService.createCustomerForUser(request);
+//        return ResponseEntity.ok().build();
+//    }
 
     // Lấy thông tin khách hàng theo email
     @GetMapping("/email")
@@ -89,12 +87,26 @@ public class CustomerController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-
+    //  Cập nhật địa chỉ của khách hàng
     @PostMapping("/update/address")
     public ResponseEntity<String> updateAddress(@RequestHeader("X-UserId") Long userId, @RequestBody CreateAddressRequest request) {
         customerService.CreateOrUpdateCustomerAddess(userId, request);
         return ResponseEntity.ok("Cập nhật địa chỉ thành công!");
     }
 
+    // Admin tạo tài khoản cho staff hoặc nhân viên
+    @PostMapping("/add-staff")
+    public ResponseEntity<?> addStaff(
+            @RequestHeader("X-Role") String role,
+            @RequestBody UserRegisterRequest request) {
+
+        if (!"ADMIN".equalsIgnoreCase(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Bạn không có quyền thực hiện chức năng này.");
+        }
+
+        customerService.register(request);
+        return ResponseEntity.ok("✅ Nhân viên đã được tạo thành công.");
+    }
 
 }
