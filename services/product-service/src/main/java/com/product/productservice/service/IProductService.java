@@ -1,6 +1,7 @@
 package com.product.productservice.service;
 
 import com.product.productservice.dto.ProductDTO;
+import com.product.productservice.models.ProductSearchRequest;
 
 import java.util.List;
 
@@ -17,5 +18,7 @@ public interface IProductService {
     List<ProductDTO> searchProductsByNameAndCategory(String keyword, String categoryName);
 
     List<ProductDTO> searchProductsByKeyword(String keyword);
+
+    List<ProductDTO> advancedSearchProducts(ProductSearchRequest request);
 
 }

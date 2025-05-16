@@ -4,6 +4,8 @@ import com.product.productservice.converter.ProductConverter;
 import com.product.productservice.dto.ProductDTO;
 import com.product.productservice.entity.CategoryEntity;
 import com.product.productservice.entity.ProductEntity;
+import com.product.productservice.models.ProductSearchRequest;
+import com.product.productservice.models.ProductSpecification;
 import com.product.productservice.repository.CategoryRepository;
 import com.product.productservice.repository.ProductRepository;
 import com.product.productservice.repository.repositorycustom.ProuductRepositoryCustom;
@@ -12,6 +14,7 @@ import com.product.productservice.service.IProductService;
 import com.product.productservice.utils.UploadFileUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.apache.commons.codec.binary.Base64;
@@ -117,7 +120,6 @@ public class ProductServiceImpl implements IProductService {
                 .map(productConverter::convertToDto)
                 .collect(Collectors.toList());
     }
-
     @Override
     public List<ProductDTO> searchProductsByNameAndCategory(String keyword,String categoryName) {
         List<ProductEntity> products;
@@ -148,6 +150,7 @@ public class ProductServiceImpl implements IProductService {
                 .toList();
     }
 
+
     @Override
     public List<ProductDTO> searchProductsByKeyword(String keyword) {
         if (keyword == null || keyword.isBlank()) {
@@ -170,6 +173,15 @@ public class ProductServiceImpl implements IProductService {
                 })
                 .map(productConverter::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDTO> advancedSearchProducts(ProductSearchRequest request) {
+        Specification<ProductEntity> spec = ProductSpecification.build(request);
+        return productRepository.findAll(spec)
+                .stream()
+                .map(productConverter::convertToDto)
+                .toList();
     }
 }
 

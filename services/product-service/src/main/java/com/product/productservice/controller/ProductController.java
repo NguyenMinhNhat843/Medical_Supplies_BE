@@ -1,6 +1,7 @@
 package com.product.productservice.controller;
 
 import com.product.productservice.dto.ProductDTO;
+import com.product.productservice.models.ProductSearchRequest;
 import com.product.productservice.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,13 +62,17 @@ public class ProductController {
     }
 
 
+//    @GetMapping("/search")
+//    public ResponseEntity<List<ProductDTO>> searchProducts(
+//            @RequestParam(required = false) String keyword,
+//            @RequestParam(required = false) String categoryName) {
+//
+//        List<ProductDTO> products = productService.searchProductsByNameAndCategory(keyword, categoryName);
+//        return ResponseEntity.ok(products);
+//    }
     @GetMapping("/search")
-    public ResponseEntity<List<ProductDTO>> searchProducts(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String categoryName) {
-
-        List<ProductDTO> products = productService.searchProductsByNameAndCategory(keyword, categoryName);
-        return ResponseEntity.ok(products);
+    public ResponseEntity<List<ProductDTO>> searchProducts(@ModelAttribute ProductSearchRequest request) {
+        return ResponseEntity.ok(productService.advancedSearchProducts(request));
     }
 
     @GetMapping("/ai/search")
