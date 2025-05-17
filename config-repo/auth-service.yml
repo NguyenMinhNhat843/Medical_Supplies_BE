@@ -1,0 +1,29 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/user_service
+    username: root
+    password: "123456"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  jwt:
+    expiration: 2592000
+    secretKey: mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: medicalsupplynexus@gmail.com
+    password: tnjvgrsppgnmruvp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
