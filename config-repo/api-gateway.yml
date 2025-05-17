@@ -46,7 +46,11 @@ spring:
         - id: admin-dashboard-service
           uri: lb://ADMIN-DASHBOARD-SERVICE
           predicates:
-            - Path=/api/inventory/**
+            - Path=/api/admin/**
+        - id: recommended-service
+          uri: lb://RECOMMENDED-SERVICE
+          predicates:
+            - Path=/api/recommended/**
 
   jwt:
     secretKey: mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM
