@@ -38,7 +38,8 @@ public class SecurityConfig {
 //                        .pathMatchers("/api/carts/**").permitAll()
                         .pathMatchers("/api/cart-items/**").permitAll()
                         .pathMatchers("/api/inventory/**").permitAll() // Cho phép cart
-                        .pathMatchers("/api/dashboard/**").permitAll() // Chỉ cho phép admin
+                        .pathMatchers("/api/dashboard/**").permitAll() // Chỉ cho phép admi
+                         .pathMatchers("/api/payments/**").permitAll() // Chỉ cho phép admin
                         .anyExchange().authenticated()         // Còn lại yêu cầu xác thực
                 )
                 // ⚠️ Đặt sau permitAll, JWT chỉ xử lý phần cần authenticated

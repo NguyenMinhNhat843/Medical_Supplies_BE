@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface PaymentRepository extends JpaRepository<PaymentEntity,Integer> {
     List<PaymentEntity> findByOrderId(Long orderId);
+    boolean existsByOrderId(Integer orderId);
+
 }

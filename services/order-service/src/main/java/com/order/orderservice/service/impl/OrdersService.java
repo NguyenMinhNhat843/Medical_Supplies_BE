@@ -6,7 +6,7 @@ import com.order.orderservice.entity.Order;
 import com.order.orderservice.entity.OrderItem;
 import com.order.orderservice.entity.OrderStatus;
 import com.order.orderservice.entity.PaymentStatus;
-import com.order.orderservice.models.PaymentRequest;
+import com.order.orderservice.models.PaymentUpdateRequest;
 import com.order.orderservice.repository.OrderRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -108,5 +109,29 @@ public class OrdersService {
         // cartClient.clearCart(request); // Giả sử có phương thức này
 
         return savedOrder;
+    }
+
+    // Cập nhật trạng thái đơn hàng từ COD sang PENDING
+    public boolean updateCODStatus(Integer orderId) {
+        Optional<Order> optional = orderRepository.findById(orderId);
+        if (optional.isEmpty()) return false;
+        Order order = optional.get();
+        order.setStatus(OrderStatus.PENDING);
+        order.setPaymentStatus(PaymentStatus.UNPAID);
+        order.setPaymentMethod("COD");
+        orderRepository.save(order);
+        return true;
+    }
+
+    public boolean updatePaymentInfo(Integer orderId, PaymentUpdateRequest req) {
+        Optional<Order> optional = orderRepository.findById(orderId);
+        if (optional.isEmpty()) return false;
+
+        Order order = optional.get();
+        order.setPaymentMethod(req.getPaymentMethod());
+        order.setPaymentStatus(PaymentStatus.valueOf(req.getPaymentStatus().toUpperCase()));
+        order.setStatus(OrderStatus.valueOf(req.getStatus().toUpperCase()));
+        orderRepository.save(order);
+        return true;
     }
 }

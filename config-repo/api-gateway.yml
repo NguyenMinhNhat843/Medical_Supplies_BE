@@ -47,6 +47,18 @@ spring:
           uri: lb://ADMIN-DASHBOARD-SERVICE
           predicates:
             - Path=/api/inventory/**
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/payments/**
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/api/notification/**
+        - id: recommend-service
+          uri: lb://RECOMMEND-SERVICE
+          predicates:
+            - Path=/api/recommend/**
 
   jwt:
     secretKey: mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM

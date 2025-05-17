@@ -3,6 +3,7 @@ package com.order.orderservice.controller;
 import com.order.orderservice.client.CartClient;
 import com.order.orderservice.dto.CartWithItemsDTO;
 import com.order.orderservice.entity.Order;
+import com.order.orderservice.models.PaymentUpdateRequest;
 import com.order.orderservice.service.impl.OrdersService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,5 +139,24 @@ public class OrderController {
     private boolean isAdmin(Long userId) {
         // Logic kiểm tra role (ví dụ: gọi service kiểm tra role từ token)
         return false; // Placeholder
+    }
+
+
+    // payment-service gọi đến hàm này để lấy thông tin đơn hàng
+    @PutMapping("/{orderId}/cod-status")
+    public ResponseEntity<?> updateOrderCODStatus(@PathVariable Integer orderId) {
+        boolean updated = orderService.updateCODStatus(orderId);
+        return updated
+                ? ResponseEntity.ok("✅ Đã cập nhật đơn hàng sang COD: PENDING/UNPAID")
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy đơn hàng");
+    }
+
+    @PutMapping("/{orderId}/payment-info")
+    public ResponseEntity<?> updatePaymentInfo(@PathVariable Integer orderId,
+                                               @RequestBody PaymentUpdateRequest request) {
+        boolean updated = orderService.updatePaymentInfo(orderId, request);
+        return updated
+                ? ResponseEntity.ok("✅ Cập nhật thanh toán đơn hàng thành công.")
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Không tìm thấy đơn hàng");
     }
 }

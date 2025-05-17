@@ -4,6 +4,7 @@ import com.payment.paymentservice.model.dto.PaymentDTO;
 import com.payment.paymentservice.model.request.PaymentRequest;
 import com.payment.paymentservice.services.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,28 +15,26 @@ import java.util.List;
 public class PaymentController {
     @Autowired
     private PaymentService paymentService;
-    // ✅ FE gửi lên thông tin orderId, method, amount
+
+
     @PostMapping
-    public ResponseEntity<PaymentDTO> createPayment(@RequestBody PaymentRequest request) {
-        PaymentDTO paymentDTO = paymentService.createPayment(request);
-        return ResponseEntity.ok(paymentDTO);
+    public ResponseEntity<?> createPayment(@RequestBody PaymentRequest request) {
+        try {
+            PaymentDTO dto = paymentService.createPayment(request);
+            return ResponseEntity.ok(dto);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
 
-    // ✅ FE hoặc admin cập nhật trạng thái thanh toán
-    @PutMapping("/{id}/status")
-    public ResponseEntity<PaymentDTO> updateStatus(
-            @PathVariable Long id,
-            @RequestParam String status) {
-        PaymentDTO updated = paymentService.updatePaymentStatus(id, status);
-        return updated != null
-                ? ResponseEntity.ok(updated)
-                : ResponseEntity.notFound().build();
-    }
-
-    // ✅ FE hoặc admin lấy toàn bộ thanh toán theo orderId
     @GetMapping("/order/{orderId}")
-    public ResponseEntity<List<PaymentDTO>> getByOrder(@PathVariable Integer orderId) {
-        List<PaymentDTO> payments = paymentService.getPaymentsByOrderId(orderId);
-        return ResponseEntity.ok(payments);
+    public ResponseEntity<List<PaymentDTO>> getPaymentsByOrderId(@PathVariable Long orderId) {
+        return ResponseEntity.ok(paymentService.getPaymentsByOrderId(orderId));
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<PaymentDTO> updateStatus(@PathVariable Long id, @RequestParam String status) {
+        PaymentDTO updated = paymentService.updatePaymentStatus(id, status);
+        return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 }
