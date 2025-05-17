@@ -3,17 +3,19 @@ package com.cart.cartservice.controller;
 import com.cart.cartservice.Client.CartItemClient;
 import com.cart.cartservice.dto.AddToCartRequest;
 import com.cart.cartservice.dto.CartItemDTO;
-import com.cart.cartservice.dto.CartWithItems;
 import com.cart.cartservice.dto.CartWithItemsDTO;
 import com.cart.cartservice.entity.Cart;
 import com.cart.cartservice.service.inter.cart_interface;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 @RestController
 @RequestMapping("/api/carts")
 public class CartController {
@@ -24,9 +26,29 @@ public class CartController {
     @Autowired
     private CartItemClient cartItemClient;
 
+    // Hàm tiện ích để trích xuất userId từ header X-UserId
+    private ResponseEntity<?> extractUserId(HttpServletRequest request) {
+        String userIdHeader = request.getHeader("X-UserId");
+        if (userIdHeader == null) {
+            return ResponseEntity.badRequest().body("Thiếu header X-UserId");
+        }
+
+        try {
+            Long userId = Long.parseLong(userIdHeader);
+            return ResponseEntity.ok(userId);
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Header X-UserId không hợp lệ");
+        }
+    }
+
     // Create
     @PostMapping
-    public ResponseEntity<Cart> createCart(@RequestParam Long userId) {
+    public ResponseEntity<?> createCart(HttpServletRequest request) {
+        ResponseEntity<?> userIdResponse = extractUserId(request);
+        if (userIdResponse.getStatusCode() != HttpStatus.OK) {
+            return userIdResponse; // Trả về lỗi nếu userId không hợp lệ
+        }
+        Long userId = (Long) userIdResponse.getBody();
         return ResponseEntity.ok(cartService.createCart(userId));
     }
 
@@ -44,7 +66,12 @@ public class CartController {
 
     // Update
     @PutMapping("/{id}")
-    public ResponseEntity<Cart> updateCart(@PathVariable Long id, @RequestParam Long newUserId) {
+    public ResponseEntity<?> updateCart(@PathVariable Long id, HttpServletRequest request) {
+        ResponseEntity<?> userIdResponse = extractUserId(request);
+        if (userIdResponse.getStatusCode() != HttpStatus.OK) {
+            return userIdResponse; // Trả về lỗi nếu userId không hợp lệ
+        }
+        Long newUserId = (Long) userIdResponse.getBody();
         return ResponseEntity.ok(cartService.updateCart(id, newUserId));
     }
 
@@ -56,10 +83,18 @@ public class CartController {
     }
 
     // Trả về Cart đơn giản với cartItemDTO (không có thông tin sản phẩm)
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> getCartSimple(@PathVariable Long userId) {
+    @GetMapping("/me")
+    public ResponseEntity<?> getCartSimple(HttpServletRequest request) {
+        ResponseEntity<?> userIdResponse = extractUserId(request);
+        if (userIdResponse.getStatusCode() != HttpStatus.OK) {
+            return userIdResponse; // Trả về lỗi nếu userId không hợp lệ
+        }
+        Long userId = (Long) userIdResponse.getBody();
+
         Cart cart = cartService.getCartByUserId(userId);
-        if (cart == null) return ResponseEntity.notFound().build();
+        if (cart == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy giỏ hàng");
+        }
 
         List<CartItemDTO> items = cartItemClient.getItemsByCartId(cart.getId());
 
@@ -71,25 +106,32 @@ public class CartController {
     }
 
     // Trả về Cart chi tiết với thông tin sản phẩm
-    @GetMapping("/{userId}/details")
-    public ResponseEntity<CartWithItemsDTO> getCart(@PathVariable Long userId) {
+    @GetMapping("/details")
+    public ResponseEntity<?> getCart(HttpServletRequest request) {
+        ResponseEntity<?> userIdResponse = extractUserId(request);
+        if (userIdResponse.getStatusCode() != HttpStatus.OK) {
+            return userIdResponse; // Trả về lỗi nếu userId không hợp lệ
+        }
+        Long userId = (Long) userIdResponse.getBody();
+
         CartWithItemsDTO cart = cartService.getCartWithProductDetails(userId);
         return ResponseEntity.ok(cart);
     }
 
     // Thêm sản phẩm vào cart và trả về chi tiết cart
-    @PostMapping("/{userId}/add")
-    public ResponseEntity<CartWithItemsDTO> addToCart(
-            @PathVariable Long userId,
-            @RequestBody AddToCartRequest request) {
+    @PostMapping("/add")
+    public ResponseEntity<?> addToCart(HttpServletRequest request, @RequestBody AddToCartRequest addToCartRequest) {
+        ResponseEntity<?> userIdResponse = extractUserId(request);
+        if (userIdResponse.getStatusCode() != HttpStatus.OK) {
+            return userIdResponse; // Trả về lỗi nếu userId không hợp lệ
+        }
+        Long userId = (Long) userIdResponse.getBody();
 
         // Thêm vào cart (tạo Cart + gọi cartItem-service để thêm sản phẩm)
-        cartService.addToCart(userId, request.getProductId(), request.getQuantity());
+        cartService.addToCart(userId, addToCartRequest.getProductId(), addToCartRequest.getQuantity());
 
         // Gọi lại hàm lấy chi tiết cart để trả về luôn thông tin đầy đủ sản phẩm
         CartWithItemsDTO detailedCart = cartService.getCartWithProductDetails(userId);
         return ResponseEntity.ok(detailedCart);
     }
-
 }
-

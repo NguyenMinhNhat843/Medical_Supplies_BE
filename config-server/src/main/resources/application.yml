@@ -12,3 +12,5 @@ spring:
         native:
 #          search-locations: file:/config-repo
            search-locations: file:///D:/DH17KTPM/HK2_2024_2025/KTTKPM/Project_Medical/Medical_Supplies_BE/config-repo
+
+

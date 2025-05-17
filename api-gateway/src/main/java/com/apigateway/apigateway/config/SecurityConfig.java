@@ -25,16 +25,17 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .securityMatcher(ServerWebExchangeMatchers.pathMatchers("/auth/**", "/users/**",
-                        "/reviews/**","/chat/**","/api/products/**"))
+                        "/reviews/**","/chat/**","/api/products/**","/api/carts/**","/api/orders/**"))
+
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/**").permitAll() // Cho phép toàn bộ auth
                         .pathMatchers("/users/**").permitAll() // Cho phép user
                         .pathMatchers("/api/products/**").permitAll() // Cho phép product
                         .pathMatchers("/api/category/**").permitAll() // Cho phép order
-                        .pathMatchers("/api/orders/**").permitAll() // Cho phép order
+//                        .pathMatchers("/api/orders/**").permitAll() // Cho phép order
                         .pathMatchers("/reviews/**").permitAll() //
                         .pathMatchers("/chat/**").permitAll() //
-                        .pathMatchers("/api/carts").permitAll()
+//                        .pathMatchers("/api/carts/**").permitAll()
                         .pathMatchers("/api/cart-items/**").permitAll()
                         .pathMatchers("/api/inventory/**").permitAll() // Cho phép cart
                         .pathMatchers("/api/dashboard/**").permitAll() // Chỉ cho phép admin

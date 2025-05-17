@@ -135,12 +135,14 @@ public class UserController {
     }
 
 
+    // Kiểm tra tên đăng nhập đã tồn tại hay chưa khi tạo từ user-service qua
     @GetMapping("/accounts/check-username")
     public ResponseEntity<Boolean> checkUsername(@RequestParam String username) {
         boolean exists = userRepository.findByUsername(username).isPresent();
         return ResponseEntity.ok(exists);
     }
 
+    // Admin Tao tài khoản đụược gọi từ user-service
     @PostMapping("/accounts")
     public ResponseEntity<Long> createAccount(@RequestBody CreateAccountRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
