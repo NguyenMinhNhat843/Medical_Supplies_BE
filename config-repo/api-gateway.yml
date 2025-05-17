@@ -1,0 +1,56 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/api/products/**, /api/category/**, /api/picture/repository/**
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/orders/**, /api/orders/**
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/**
+        - id: review-service
+          uri: lb://REVIEW-SERVICE
+          predicates:
+            - Path=/reviews/**
+        - id: chat-service
+          uri: lb://CHAT-SERVICE
+          predicates:
+            - Path=/chat/**
+        - id: cart-service
+          uri: lb://CART-SERVICE
+          predicates:
+            - Path=/api/carts/**
+        - id: cart-item-service
+          uri: lb://CARTITEM-SERVICE
+          predicates:
+            - Path=/api/cart-items/**
+        - id: inventory-service
+          uri: lb://INVENTORY-SERVICE
+          predicates:
+            - Path=/api/inventory/**
+        - id: admin-dashboard-service
+          uri: lb://ADMIN-DASHBOARD-SERVICE
+          predicates:
+            - Path=/api/inventory/**
+
+  jwt:
+    secretKey: mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM
+
+logging:
+  level:
+    org.springframework.security: DEBUG
