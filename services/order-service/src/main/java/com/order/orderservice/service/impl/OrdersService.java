@@ -2,6 +2,7 @@ package com.order.orderservice.service.impl;
 
 import com.order.orderservice.client.CartClient;
 import com.order.orderservice.dto.CartWithItemsDTO;
+import com.order.orderservice.dto.DashboardStats;
 import com.order.orderservice.entity.Order;
 import com.order.orderservice.entity.OrderItem;
 import com.order.orderservice.entity.OrderStatus;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -98,5 +100,41 @@ public class OrdersService {
         // cartClient.clearCart(request); // Giả sử có phương thức này
 
         return savedOrder;
+    }
+
+    // Phương thức mới: Tính doanh thu và số lượng đơn hàng theo khoảng thời gian
+    public DashboardStats getRevenueByDateRange(LocalDate startDate, LocalDate endDate) {
+        // Nếu không có ngày bắt đầu/kết thúc, mặc định lấy 7 ngày gần nhất
+        if (startDate == null || endDate == null) {
+            endDate = LocalDate.now(); // Ngày hiện tại: 17/05/2025
+            startDate = endDate.minusDays(7); // 7 ngày trước
+        }
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.plusDays(1).atStartOfDay();
+
+        // Lấy danh sách đơn hàng trong khoảng thời gian
+        List<Order> orders = orderRepository.findByOrderDateBetween(start, end);
+
+        // Tính tổng doanh thu và số lượng đơn hàng (loại bỏ đơn bị hủy)
+        double totalRevenue = orders.stream()
+                .filter(order -> order.getStatus() != null && !order.getStatus().equals(OrderStatus.CANCELLED))
+                .mapToDouble(Order::getTotalAmount)
+                .sum();
+
+        long orderCount = orders.stream()
+                .filter(order -> order.getStatus() != null && !order.getStatus().equals(OrderStatus.CANCELLED))
+                .count();
+
+        return new DashboardStats(totalRevenue, orderCount);
+    }
+
+    public List<Order> getOrdersByDateRange(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null || endDate == null) {
+            endDate = LocalDate.now();
+            startDate = endDate.minusDays(7);
+        }
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.plusDays(1).atStartOfDay();
+        return orderRepository.findByOrderDateBetween(start, end);
     }
 }

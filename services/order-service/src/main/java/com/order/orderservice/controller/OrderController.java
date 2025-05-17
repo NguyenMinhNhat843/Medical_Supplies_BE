@@ -2,14 +2,17 @@ package com.order.orderservice.controller;
 
 import com.order.orderservice.client.CartClient;
 import com.order.orderservice.dto.CartWithItemsDTO;
+import com.order.orderservice.dto.DashboardStats;
 import com.order.orderservice.entity.Order;
 import com.order.orderservice.service.impl.OrdersService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -138,5 +141,20 @@ public class OrderController {
     private boolean isAdmin(Long userId) {
         // Logic kiểm tra role (ví dụ: gọi service kiểm tra role từ token)
         return false; // Placeholder
+    }
+
+    // API mới: Lấy dữ liệu cho biểu đồ doanh thu
+    @GetMapping("/dashboard-stats")
+    public DashboardStats getDashboardStats(
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return orderService.getRevenueByDateRange(startDate, endDate);
+    }
+
+    @GetMapping("/by-date")
+    public List<Order> getOrdersByDateRange(
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        return orderService.getOrdersByDateRange(startDate, endDate);
     }
 }
