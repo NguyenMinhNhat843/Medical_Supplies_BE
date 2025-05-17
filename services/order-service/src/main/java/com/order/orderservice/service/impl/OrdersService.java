@@ -6,10 +6,13 @@ import com.order.orderservice.entity.Order;
 import com.order.orderservice.entity.OrderItem;
 import com.order.orderservice.entity.OrderStatus;
 import com.order.orderservice.entity.PaymentStatus;
+import com.order.orderservice.models.PaymentRequest;
 import com.order.orderservice.repository.OrderRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,6 +26,13 @@ public class OrdersService {
 
     @Autowired
     private CartClient cartClient;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+
+    @Value("${payment-service.url}")
+    private String paymentServiceUrl;
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
