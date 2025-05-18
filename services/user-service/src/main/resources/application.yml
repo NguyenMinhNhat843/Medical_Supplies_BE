@@ -2,7 +2,18 @@ spring:
   application:
     name: user-service
   config:
-    import: "optional:configserver:"
+    import: optional:configserver:http://localhost:8888
+  datasource:
+    url: jdbc:mysql://localhost:3306/customer_service
+    username: root
+    password: "123456"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+server:
+  port: 8083
 #  cloud:
 #    config:
 #      uri: http://config-server:8888
