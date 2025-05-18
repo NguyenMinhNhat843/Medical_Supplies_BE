@@ -9,7 +9,11 @@ import com.user.customerservice.model.UpdateCustomerRequest;
 import com.user.customerservice.repository.CustomerRepository;
 import com.user.customerservice.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -21,10 +25,13 @@ import java.util.Optional;
 public class CustomerServiceImpl implements ICustomerService {
 
     @Autowired
-    private  CustomerRepository customerRepository;
+    private CustomerRepository customerRepository;
 
     @Autowired
     private CustomerConverter customerConverter;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     private String extractFirstName(String fullName) {
         String[] parts = fullName.trim().split("\\s+");
@@ -35,6 +42,23 @@ public class CustomerServiceImpl implements ICustomerService {
         String[] parts = fullName.trim().split("\\s+");
         return parts.length > 1 ? String.join(" ", Arrays.copyOf(parts, parts.length - 1)) : "";
     }
+
+    private void sendUserUpdateToNotificationService(Long userId, String email) { // Loại bỏ deviceToken
+        try {
+            String url = "http://localhost:8081/api/users/update";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String body = String.format("{\"userId\":%d,\"email\":\"%s\"}", userId, email); // Chỉ gửi userId và email
+            HttpEntity<String> request = new HttpEntity<>(body, headers);
+
+            restTemplate.postForEntity(url, request, String.class);
+            System.out.println("Sent user update to notification-service: userId=" + userId);
+        } catch (Exception e) {
+            System.err.println("Failed to send user update to notification-service: " + e.getMessage());
+        }
+    }
+
     @Override
     public CustomerEntity saveCustomer(CustomerEntity customerEntity) {
         return customerRepository.save(customerEntity);
@@ -44,7 +68,6 @@ public class CustomerServiceImpl implements ICustomerService {
     public Optional<CustomerInfoResponse> getCustomerByUserId(Long userId) {
         CustomerEntity entity = customerRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
-
         return Optional.ofNullable(customerConverter.toResponse(entity));
     }
 
@@ -65,14 +88,15 @@ public class CustomerServiceImpl implements ICustomerService {
 
         customer.setFirstName(extractFirstName(customerUpdate.getFullName()));
         customer.setLastName(extractLastName(customerUpdate.getFullName()));
-
         customer.setPhone(customerUpdate.getPhone());
         customer.setAddress(customerUpdate.getAddress());
         customer.setEmail(customerUpdate.getEmail());
         customer.setGender(customerUpdate.getGender());
         customer.setDateOfBirth(customerUpdate.getDateOfBirth());
 
-        return customerRepository.save(customer);
+        CustomerEntity updatedCustomer = customerRepository.save(customer);
+        sendUserUpdateToNotificationService(userId, customerUpdate.getEmail()); // Loại bỏ deviceToken
+        return updatedCustomer;
     }
 
     @Override
@@ -87,7 +111,9 @@ public class CustomerServiceImpl implements ICustomerService {
         customer.setGender("");
         customer.setDateOfBirth(null);
         customer.setCreatedAt(Date.from(LocalDateTime.now().atZone(java.time.ZoneId.systemDefault()).toInstant()));
+
         customerRepository.save(customer);
+        sendUserUpdateToNotificationService(request.getUserId(), request.getEmail()); // Loại bỏ deviceToken
     }
 
     @Override
@@ -102,9 +128,9 @@ public class CustomerServiceImpl implements ICustomerService {
 
         String address = customerConverter.buildAddress(request);
         customer.setAddress(address);
-        customerRepository.save(customer);
-        return customer;
+
+        CustomerEntity updatedCustomer = customerRepository.save(customer);
+        sendUserUpdateToNotificationService(userId, customer.getEmail()); // Loại bỏ deviceToken
+        return updatedCustomer;
     }
-
-
 }

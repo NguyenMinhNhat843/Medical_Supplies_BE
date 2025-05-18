@@ -48,6 +48,9 @@ public class Order {
     @Column(name = "tracking_number")
     private String trackingNumber;
 
+    @Column(name = "voucher_code") // Thêm trường voucherCode
+    private String voucherCode;    // Có thể nullable, vì không phải đơn hàng nào cũng có voucher
+
     @CreationTimestamp
     @Column(name = "create_at", updatable = false)
     private LocalDateTime createAt;
