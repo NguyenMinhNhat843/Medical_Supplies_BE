@@ -275,25 +275,71 @@ public class CustomerServiceImpl implements ICustomerService {
 
     @Override
     public List<UserFullInfoResponse> searchByRoleAndKeyword(String roleGroup, String keyword) {
-        // Role group xác định URL gọi auth-service
         String url = roleGroup.equalsIgnoreCase("USER")
                 ? authServiceUrl + "/auth/accounts/users"
-                : authServiceUrl + "/auth/accounts/staffs"; // STAFF or ADMIN
+                : authServiceUrl + "/auth/accounts/staffs";
 
         ResponseEntity<AccountResponse[]> response = restTemplate.getForEntity(url, AccountResponse[].class);
         AccountResponse[] accounts = response.getBody();
-
         if (accounts == null) return Collections.emptyList();
 
         List<UserFullInfoResponse> result = new ArrayList<>();
-
+        // Lọc theo vai trò
         for (AccountResponse acc : accounts) {
             Optional<CustomerEntity> optional = customerRepository.findByUserId(acc.getId());
             if (optional.isPresent()) {
                 CustomerEntity c = optional.get();
                 String fullName = c.getLastName() + " " + c.getFirstName();
 
-                boolean match = fullName.toLowerCase().contains(keyword.toLowerCase())
+                // Check if keyword is null or empty → luôn khớp
+                boolean match = (keyword == null || keyword.isBlank())
+                        || fullName.toLowerCase().contains(keyword.toLowerCase())
+                        || c.getPhone().contains(keyword);
+
+                if (match) {
+                    result.add(new UserFullInfoResponse(
+                            acc.getId(),
+                            acc.getUsername(),
+                            acc.getRole(),
+                            fullName,
+                            c.getEmail(),
+                            c.getPhone(),
+                            c.getAddress()
+                    ));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UserFullInfoResponse> searchStaffByKeywordAndRole(String keyword, String roleFilter) {
+        ResponseEntity<AccountResponse[]> response = restTemplate.getForEntity(
+                authServiceUrl + "/auth/accounts/staffs", // luôn lấy STAFF + ADMIN
+                AccountResponse[].class
+        );
+
+        AccountResponse[] accounts = response.getBody();
+        if (accounts == null) return Collections.emptyList();
+
+        List<UserFullInfoResponse> result = new ArrayList<>();
+
+        for (AccountResponse acc : accounts) {
+            // Nếu roleFilter không phải ALL và không rỗng thì lọc theo vai trò
+            if (roleFilter != null && !roleFilter.equalsIgnoreCase("ALL")
+                    && !acc.getRole().equalsIgnoreCase(roleFilter)) {
+                continue;
+            }
+
+            Optional<CustomerEntity> optional = customerRepository.findByUserId(acc.getId());
+            if (optional.isPresent()) {
+                CustomerEntity c = optional.get();
+                String fullName = c.getLastName() + " " + c.getFirstName();
+
+                // Nếu không có keyword → luôn khớp
+                boolean match = (keyword == null || keyword.isBlank())
+                        || fullName.toLowerCase().contains(keyword.toLowerCase())
                         || c.getPhone().contains(keyword);
 
                 if (match) {

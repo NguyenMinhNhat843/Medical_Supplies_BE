@@ -30,5 +30,6 @@ public interface ICustomerService {
     List<UserFullInfoResponse> searchCustomers(String keyword);
 
     List<UserFullInfoResponse> searchByRoleAndKeyword(String roleGroup, String keyword);
+    List<UserFullInfoResponse> searchStaffByKeywordAndRole(String keyword, String roleFilter); // Cho STAFF + ADMIN
 
 }

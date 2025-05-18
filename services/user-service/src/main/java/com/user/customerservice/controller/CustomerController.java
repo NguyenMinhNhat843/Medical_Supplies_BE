@@ -129,15 +129,18 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.searchCustomers(keyword));
     }
 
-    // 🔹 Tìm STAFF + ADMIN
+    // Tìm STAFF + ADMIN + Lọc theo role
     @GetMapping("/staffs/search")
-    public ResponseEntity<List<UserFullInfoResponse>> searchStaffs(@RequestParam String keyword) {
-        return ResponseEntity.ok(customerService.searchByRoleAndKeyword("STAFF", keyword));
+    public ResponseEntity<List<UserFullInfoResponse>> searchStaffs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "ALL") String role) {
+        return ResponseEntity.ok(customerService.searchStaffByKeywordAndRole(keyword, role));
     }
 
-    // 🔹 Tìm USER (khách hàng)
+    // Tìm USER (khách hàng)
     @GetMapping("/customers/search")
-    public ResponseEntity<List<UserFullInfoResponse>> searchCustomers(@RequestParam String keyword) {
+    public ResponseEntity<List<UserFullInfoResponse>> searchCustomers(
+            @RequestParam(required = false) String keyword) {
         return ResponseEntity.ok(customerService.searchByRoleAndKeyword("USER", keyword));
     }
 }
