@@ -143,4 +143,11 @@ public class CustomerController {
             @RequestParam(required = false) String keyword) {
         return ResponseEntity.ok(customerService.searchByRoleAndKeyword("USER", keyword));
     }
+
+    // Check Email Xem email đã tồn tại hay chưa
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        boolean exists = customerService.findByEmailIgnoreCase(email).isPresent();
+        return ResponseEntity.ok(exists);
+    }
 }

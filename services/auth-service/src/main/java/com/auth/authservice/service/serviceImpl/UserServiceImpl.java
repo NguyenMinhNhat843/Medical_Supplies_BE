@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 
+import javax.swing.text.StyledEditorKit;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -132,8 +133,12 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public Long register(UserRegisterRequest userRegisterRequest) throws MyException {
+        String checkUrl = "http://USER-SERVICE/users/check-email?email=" + userRegisterRequest.getEmail();
+        Boolean exist = restTemplate.getForObject(checkUrl, Boolean.class);
         if(userRepository.findByUsername(userRegisterRequest.getUsername()).isPresent()){
-            throw new MyException("Tên đăng nhập đã tồn tại");
+            throw new MyException("Tên đăng nhập đã tồn tại!!! Vui lòng kiểm tra lại");
+        } else if ( Boolean.TRUE.equals(exist)) {
+            throw new MyException("Email đã tồn tại!!! Vui lòng kiểm tra lại");
         }
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(userRegisterRequest.getUsername());
@@ -143,6 +148,7 @@ public class UserServiceImpl implements IUserService {
         CreateCustomerRequest createCustomerRequest = new CreateCustomerRequest();
         createCustomerRequest.setUserId(userEntity.getId());
         createCustomerRequest.setEmail(userRegisterRequest.getEmail());
+
 
         try {
             restTemplate.postForObject("http://USER-SERVICE/users", createCustomerRequest, Void.class);

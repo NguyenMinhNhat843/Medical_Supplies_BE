@@ -359,6 +359,11 @@ public class CustomerServiceImpl implements ICustomerService {
         return result;
     }
 
+    @Override
+    public Optional<CustomerEntity> findByEmailIgnoreCase(String email) {
+        return customerRepository.findByEmailIgnoreCase(email);
+    }
+
     private boolean checkUsernameExists(String username) {
         try {
             ResponseEntity<Boolean> response = restTemplate.getForEntity(

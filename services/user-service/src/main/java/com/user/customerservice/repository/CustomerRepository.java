@@ -21,4 +21,6 @@ public interface CustomerRepository extends JpaRepository<CustomerEntity,Long> {
             "LOWER(CONCAT(c.lastName, ' ', c.firstName)) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR c.phone LIKE %:keyword%")
     List<CustomerEntity> searchByNameOrPhone(@Param("keyword") String keyword);
+
+    Optional<CustomerEntity> findByEmailIgnoreCase(String email);
 }
