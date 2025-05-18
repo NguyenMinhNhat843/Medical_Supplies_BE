@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -109,4 +110,34 @@ public class CustomerController {
         return ResponseEntity.ok("✅ Nhân viên đã được tạo thành công.");
     }
 
+    // Lấy danh sách các nhân viên
+    @GetMapping("/staffs")
+    public ResponseEntity<List<UserFullInfoResponse>> getStaffAccounts() {
+        List<UserFullInfoResponse> list = customerService.getStaffAccounts();
+        return ResponseEntity.ok(list);
+    }
+
+    // Lấy danh sách các khách hàng
+    @GetMapping("/customers")
+    public ResponseEntity<List<UserFullInfoResponse>> getCustomerAccounts() {
+        List<UserFullInfoResponse> list = customerService.getCustomerAccounts();
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserFullInfoResponse>> searchUsers(@RequestParam String keyword) {
+        return ResponseEntity.ok(customerService.searchCustomers(keyword));
+    }
+
+    // 🔹 Tìm STAFF + ADMIN
+    @GetMapping("/staffs/search")
+    public ResponseEntity<List<UserFullInfoResponse>> searchStaffs(@RequestParam String keyword) {
+        return ResponseEntity.ok(customerService.searchByRoleAndKeyword("STAFF", keyword));
+    }
+
+    // 🔹 Tìm USER (khách hàng)
+    @GetMapping("/customers/search")
+    public ResponseEntity<List<UserFullInfoResponse>> searchCustomers(@RequestParam String keyword) {
+        return ResponseEntity.ok(customerService.searchByRoleAndKeyword("USER", keyword));
+    }
 }

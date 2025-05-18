@@ -8,6 +8,7 @@ import com.auth.authservice.model.dto.CustomerEmailDTO;
 import com.auth.authservice.model.dto.PasswordDTO;
 import com.auth.authservice.model.dto.UserDTO;
 import com.auth.authservice.model.request.*;
+import com.auth.authservice.model.response.AccountResponse;
 import com.auth.authservice.repository.IUserRepository;
 import com.auth.authservice.service.IUserService;
 import com.auth.authservice.service.serviceImpl.EmailService;
@@ -21,10 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -159,4 +157,30 @@ public class UserController {
         userRepository.save(account);
         return ResponseEntity.ok(account.getId());
     }
+
+    // Get List tài khoản nhân viên
+    @GetMapping("/accounts/staffs")
+    public ResponseEntity<List<AccountResponse>> getStaffs() {
+        List<AccountResponse> result = userService.getStaffAccounts();
+        return ResponseEntity.ok(result);
+    }
+
+    // Get List tài khoản khách hàng
+    @GetMapping("/accounts/users")
+    public ResponseEntity<List<AccountResponse>> getUsers() {
+        return ResponseEntity.ok(userService.getUsers());
+    }
+
+    // Search tài khoản
+    @GetMapping("/accounts/{userId}")
+    public ResponseEntity<AccountResponse> getAccountById(@PathVariable Long userId) {
+        try {
+            AccountResponse account = userService.getAccountById(userId);
+            return ResponseEntity.ok(account);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 }

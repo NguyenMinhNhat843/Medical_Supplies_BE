@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -164,6 +161,156 @@ public class CustomerServiceImpl implements ICustomerService {
         customerRepository.save(info);
 
         System.out.println("Đã tạo nhân viên và có username là: " + finalUsername);
+    }
+
+    @Override
+    public List<UserFullInfoResponse> getStaffAccounts() {
+        ResponseEntity<AccountResponse[]> response = restTemplate.getForEntity(
+                authServiceUrl + "/auth/accounts/staffs",
+                AccountResponse[].class
+        );
+
+        AccountResponse[] accounts = response.getBody();
+        if (accounts == null) return Collections.emptyList();
+
+        List<UserFullInfoResponse> result = new ArrayList<>();
+
+        for (AccountResponse acc : accounts) {
+            Optional<CustomerEntity> optional = customerRepository.findByUserId(acc.getId());
+
+            String fullName = null, email = null, phone = null, address = null;
+
+            if (optional.isPresent()) {
+                CustomerEntity c = optional.get();
+                fullName = c.getLastName() + " " + c.getFirstName();
+                email = c.getEmail();
+                phone = c.getPhone();
+                address = c.getAddress();
+            }
+
+            result.add(new UserFullInfoResponse(
+                    acc.getId(),
+                    acc.getUsername(),
+                    acc.getRole(),
+                    fullName,
+                    email,
+                    phone,
+                    address
+            ));
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UserFullInfoResponse> getCustomerAccounts() {
+        ResponseEntity<AccountResponse[]> response = restTemplate.getForEntity(
+                authServiceUrl + "/auth/accounts/users",
+                AccountResponse[].class
+        );
+
+        AccountResponse[] accounts = response.getBody();
+        if (accounts == null) return Collections.emptyList();
+
+        List<UserFullInfoResponse> result = new ArrayList<>();
+
+        for (AccountResponse acc : accounts) {
+            Optional<CustomerEntity> optional = customerRepository.findByUserId(acc.getId());
+
+            String fullName = null, email = null, phone = null, address = null;
+
+            if (optional.isPresent()) {
+                CustomerEntity c = optional.get();
+                fullName = c.getLastName() + " " + c.getFirstName();
+                email = c.getEmail();
+                phone = c.getPhone();
+                address = c.getAddress();
+            }
+
+            result.add(new UserFullInfoResponse(
+                    acc.getId(),
+                    acc.getUsername(),
+                    acc.getRole(),
+                    fullName,
+                    email,
+                    phone,
+                    address
+            ));
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UserFullInfoResponse> searchCustomers(String keyword) {
+        List<CustomerEntity> customers = customerRepository.searchByNameOrPhone(keyword);
+
+        List<UserFullInfoResponse> result = new ArrayList<>();
+
+        for (CustomerEntity c : customers) {
+            // Gọi auth-service để lấy account theo userId
+            String url = authServiceUrl + "/auth/accounts/" + c.getUserId();
+            try {
+                ResponseEntity<AccountResponse> response = restTemplate.getForEntity(url, AccountResponse.class);
+                AccountResponse acc = response.getBody();
+
+                String fullName = c.getLastName() + " " + c.getFirstName();
+
+                result.add(new UserFullInfoResponse(
+                        acc.getId(),
+                        acc.getUsername(),
+                        acc.getRole(),
+                        fullName,
+                        c.getEmail(),
+                        c.getPhone(),
+                        c.getAddress()
+                ));
+            } catch (Exception e) {
+                // Bỏ qua nếu không gọi được auth-service
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UserFullInfoResponse> searchByRoleAndKeyword(String roleGroup, String keyword) {
+        // Role group xác định URL gọi auth-service
+        String url = roleGroup.equalsIgnoreCase("USER")
+                ? authServiceUrl + "/auth/accounts/users"
+                : authServiceUrl + "/auth/accounts/staffs"; // STAFF or ADMIN
+
+        ResponseEntity<AccountResponse[]> response = restTemplate.getForEntity(url, AccountResponse[].class);
+        AccountResponse[] accounts = response.getBody();
+
+        if (accounts == null) return Collections.emptyList();
+
+        List<UserFullInfoResponse> result = new ArrayList<>();
+
+        for (AccountResponse acc : accounts) {
+            Optional<CustomerEntity> optional = customerRepository.findByUserId(acc.getId());
+            if (optional.isPresent()) {
+                CustomerEntity c = optional.get();
+                String fullName = c.getLastName() + " " + c.getFirstName();
+
+                boolean match = fullName.toLowerCase().contains(keyword.toLowerCase())
+                        || c.getPhone().contains(keyword);
+
+                if (match) {
+                    result.add(new UserFullInfoResponse(
+                            acc.getId(),
+                            acc.getUsername(),
+                            acc.getRole(),
+                            fullName,
+                            c.getEmail(),
+                            c.getPhone(),
+                            c.getAddress()
+                    ));
+                }
+            }
+        }
+
+        return result;
     }
 
     private boolean checkUsernameExists(String username) {

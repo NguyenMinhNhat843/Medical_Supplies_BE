@@ -18,7 +18,7 @@ public class PaymentConverter {
 
     public PaymentEntity toEntity(PaymentRequest request) {
         PaymentEntity entity = modelMapper.map(request, PaymentEntity.class);
-        entity.setId(null); // 🛠 Rất quan trọng: tránh Hibernate merge lỗi
+        entity.setId(null);
         return entity;
     }
 

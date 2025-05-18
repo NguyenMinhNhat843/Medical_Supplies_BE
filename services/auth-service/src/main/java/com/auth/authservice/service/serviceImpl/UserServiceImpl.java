@@ -8,6 +8,7 @@ import com.auth.authservice.model.dto.CreateCustomerRequest;
 import com.auth.authservice.model.dto.PasswordDTO;
 import com.auth.authservice.model.dto.UserDTO;
 import com.auth.authservice.model.request.UserRegisterRequest;
+import com.auth.authservice.model.response.AccountResponse;
 import com.auth.authservice.repository.IUserRepository;
 import com.auth.authservice.service.IUserService;
 import com.auth.authservice.utils.JwtTokenUtil;
@@ -22,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -139,4 +141,42 @@ public class UserServiceImpl implements IUserService {
             System.err.println("Gọi auth-service thất bại: " + e.getMessage());
         }
     }
+
+    // Lấy danh sách tài khoản nhân viên và admin
+    @Override
+    public List<AccountResponse> getStaffAccounts() {
+        List<UserEntity> list = userRepository.findByRoleIn(List.of("ADMIN", "STAFF"));
+        return list.stream()
+                .map(acc -> new AccountResponse(
+                        acc.getId(),
+                        acc.getUsername(),
+                        acc.getRole()
+                ))
+                .toList();
+    }
+
+    // Lấy thông tin tài khoản theo role USER
+    @Override
+    public List<AccountResponse> getUsers() {
+        List<UserEntity> list = userRepository.findByRole("USER");
+        return list.stream()
+                .map(acc -> new AccountResponse(
+                        acc.getId(),
+                        acc.getUsername(),
+                        acc.getRole()
+                ))
+                .toList();
+    }
+
+    @Override
+    public AccountResponse getAccountById(Long userId) {
+        return userRepository.findById(userId)
+                .map(acc -> new AccountResponse(
+                        acc.getId(),
+                        acc.getUsername(),
+                        acc.getRole()))
+                .orElseThrow(() -> new NoSuchElementException("Không tìm thấy tài khoản với ID: " + userId));
+    }
+
+
 }

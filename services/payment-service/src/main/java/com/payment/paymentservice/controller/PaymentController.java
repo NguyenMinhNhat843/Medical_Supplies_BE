@@ -3,6 +3,7 @@ package com.payment.paymentservice.controller;
 import com.payment.paymentservice.model.dto.PaymentDTO;
 import com.payment.paymentservice.model.request.PaymentRequest;
 import com.payment.paymentservice.services.PaymentService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,18 @@ public class PaymentController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
+
+    @PutMapping("/{orderId}/confirm")
+    public ResponseEntity<?> confirmBankTransfer(@PathVariable Long orderId) {
+        try {
+            paymentService.confirmBankTransfer(orderId);
+            return ResponseEntity.ok("Đã xác nhận chuyển khoản thành công cho đơn hàng " + orderId);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+
 
     @GetMapping("/order/{orderId}")
     public ResponseEntity<List<PaymentDTO>> getPaymentsByOrderId(@PathVariable Long orderId) {

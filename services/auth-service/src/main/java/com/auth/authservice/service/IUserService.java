@@ -5,6 +5,7 @@ import com.auth.authservice.exception.MyException;
 import com.auth.authservice.model.dto.PasswordDTO;
 import com.auth.authservice.model.dto.UserDTO;
 import com.auth.authservice.model.request.UserRegisterRequest;
+import com.auth.authservice.model.response.AccountResponse;
 
 import java.util.List;
 
@@ -23,4 +24,9 @@ public interface IUserService {
 
     void register(UserRegisterRequest userRegisterRequest) throws MyException;
 
+    List<AccountResponse> getStaffAccounts();
+
+    List<AccountResponse> getUsers();
+
+    AccountResponse getAccountById(Long userId);
 }

@@ -12,4 +12,5 @@ public interface PaymentService {
 
     List<PaymentDTO> getPaymentsByOrderId(Long orderId);
 
+    void confirmBankTransfer(Long orderId);
 }
