@@ -67,10 +67,20 @@ public class UserController {
 //        }
 //
 //    }
+//    @PostMapping("/register")
+//    public ResponseEntity<String> register(@RequestBody UserRegisterRequest request) throws MyException {
+//        userService.register(request);
+//        return ResponseEntity.ok("Đăng ký thành công!");
+//    }
+
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserRegisterRequest request) throws MyException {
-        userService.register(request);
-        return ResponseEntity.ok("Đăng ký thành công!");
+    public ResponseEntity<String> requestRegisterOtp(@RequestBody UserRegisterRequest request) {
+        return userService.requestRegisterOtp(request);
+    }
+
+    @PostMapping("/register/confirm-otp")
+    public ResponseEntity<String> confirmRegisterOtp(@RequestBody VerifyOtpRequest request) throws MyException {
+        return userService.confirmRegisterOtp(request);
     }
 
     @PutMapping("/change-password/{id}")
@@ -121,7 +131,6 @@ public class UserController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) throws MyException {
-
 
         Long userId = otpService.getUserIdFromOtpStore(request.getEmail());
 
@@ -181,6 +190,9 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+    // Cập nhật tài khoản
 
 
 }

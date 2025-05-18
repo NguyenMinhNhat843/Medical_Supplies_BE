@@ -70,11 +70,11 @@ public class CustomerController {
 //    }
 
     // Tạo mới khách hàng
-//    @PostMapping
-//    public ResponseEntity<Void> createCustomerInfo(@RequestBody CreateCustomerRequest request) {
-//        customerService.createCustomerForUser(request);
-//        return ResponseEntity.ok().build();
-//    }
+    @PostMapping
+    public ResponseEntity<Void> createCustomerInfo(@RequestBody CreateCustomerRequest request) {
+        customerService.createCustomerForUser(request);
+        return ResponseEntity.ok().build();
+    }
 
     // Lấy thông tin khách hàng theo email
     @GetMapping("/email")

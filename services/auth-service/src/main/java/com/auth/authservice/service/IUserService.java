@@ -5,7 +5,9 @@ import com.auth.authservice.exception.MyException;
 import com.auth.authservice.model.dto.PasswordDTO;
 import com.auth.authservice.model.dto.UserDTO;
 import com.auth.authservice.model.request.UserRegisterRequest;
+import com.auth.authservice.model.request.VerifyOtpRequest;
 import com.auth.authservice.model.response.AccountResponse;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -22,11 +24,17 @@ public interface IUserService {
     // login
     String login(String username, String password) throws Exception;
 
-    void register(UserRegisterRequest userRegisterRequest) throws MyException;
+    Long register(UserRegisterRequest userRegisterRequest) throws MyException;
 
     List<AccountResponse> getStaffAccounts();
 
     List<AccountResponse> getUsers();
 
     AccountResponse getAccountById(Long userId);
+
+
+
+    ResponseEntity<String> requestRegisterOtp(UserRegisterRequest request);
+    ResponseEntity<String> confirmRegisterOtp(VerifyOtpRequest request) throws MyException;
+
 }

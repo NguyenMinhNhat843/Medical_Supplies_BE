@@ -8,12 +8,15 @@ import com.auth.authservice.model.dto.CreateCustomerRequest;
 import com.auth.authservice.model.dto.PasswordDTO;
 import com.auth.authservice.model.dto.UserDTO;
 import com.auth.authservice.model.request.UserRegisterRequest;
+import com.auth.authservice.model.request.VerifyOtpRequest;
 import com.auth.authservice.model.response.AccountResponse;
 import com.auth.authservice.repository.IUserRepository;
 import com.auth.authservice.service.IUserService;
 import com.auth.authservice.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,7 +44,14 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private OtpService otpService;
 
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private EmailVerificationService emailVerificationService;
 
 
     private final JwtTokenUtil jwtTokenUtil;
@@ -121,7 +131,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void register(UserRegisterRequest userRegisterRequest) throws MyException {
+    public Long register(UserRegisterRequest userRegisterRequest) throws MyException {
         if(userRepository.findByUsername(userRegisterRequest.getUsername()).isPresent()){
             throw new MyException("Tên đăng nhập đã tồn tại");
         }
@@ -135,11 +145,12 @@ public class UserServiceImpl implements IUserService {
         createCustomerRequest.setEmail(userRegisterRequest.getEmail());
 
         try {
-            restTemplate.postForObject("http://AUTH-SERVICE/users", createCustomerRequest, Void.class);
+            restTemplate.postForObject("http://USER-SERVICE/users", createCustomerRequest, Void.class);
             System.out.println("✅ Đã gọi auth-service tạo CustomerInfo cho userId: " + userEntity.getId());
         } catch (Exception e) {
             System.err.println("Gọi auth-service thất bại: " + e.getMessage());
         }
+        return userEntity.getId();
     }
 
     // Lấy danh sách tài khoản nhân viên và admin
@@ -176,6 +187,39 @@ public class UserServiceImpl implements IUserService {
                         acc.getUsername(),
                         acc.getRole()))
                 .orElseThrow(() -> new NoSuchElementException("Không tìm thấy tài khoản với ID: " + userId));
+    }
+
+
+    @Override
+    public ResponseEntity<String> requestRegisterOtp(UserRegisterRequest request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Tên đăng nhập đã tồn tại.");
+        }
+
+        otpService.storeRegistrationInfo(request.getEmail(), request);
+        String otp = otpService.generateOtp(request.getEmail(), null);
+        emailService.sendOtp(request.getEmail(), otp);
+
+        return ResponseEntity.ok("Đã gửi mã OTP đến email. Vui lòng kiểm tra hộp thư.");
+    }
+
+    @Override
+    public ResponseEntity<String> confirmRegisterOtp(VerifyOtpRequest request) throws MyException {
+        boolean valid = otpService.validateOtp(request.getEmail(), request.getOtp());
+        if (!valid) {
+            return ResponseEntity.badRequest().body("OTP không đúng hoặc đã hết hạn.");
+        }
+
+        UserRegisterRequest pending = otpService.getRegistrationInfo(request.getEmail());
+        if (pending == null) {
+            return ResponseEntity.badRequest().body("Không tìm thấy thông tin đăng ký.");
+        }
+
+        // Gọi lại register (hàm bạn đã viết)
+        this.register(pending);
+
+        otpService.clearOtp(request.getEmail());
+        return ResponseEntity.ok("Đăng ký thành công!");
     }
 
 
