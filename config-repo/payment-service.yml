@@ -18,6 +18,6 @@ spring:
 order-service:
   url: http://ORDER-SERVICE
 stripe:
-  secret-key:
+  secret-key: 
   webhook:
     secret: whsec_97705779a9ab1062496ec01f1de6fa276793df695d4ab648ad543dc772a5bc08

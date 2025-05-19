@@ -5,6 +5,7 @@ import com.payment.paymentservice.entity.PaymentEntity;
 import com.payment.paymentservice.model.dto.PaymentDTO;
 import com.payment.paymentservice.model.request.PaymentRequest;
 import com.payment.paymentservice.model.request.PaymentUpdateRequest;
+import com.payment.paymentservice.model.response.OrderResponse;
 import com.payment.paymentservice.repository.PaymentRepository;
 import com.payment.paymentservice.services.PaymentService;
 import com.payment.paymentservice.services.StripeService;
@@ -14,6 +15,7 @@ import com.stripe.exception.StripeException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -96,7 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
 //            String accField = "02" + String.format("%02d", accBytes.length) + accountNo;
 //            String merchantAccountInfo = guiField + binField + accField;
 //            String merchantField = "26" + String.format("%02d", merchantAccountInfo.getBytes(StandardCharsets.UTF_8).length) + merchantAccountInfo;
-//            System.out.println("✅ accountNo bytes = " + Arrays.toString(accBytes));
+//            System.out.println(" accountNo bytes = " + Arrays.toString(accBytes));
 //            System.out.println("accField = " + accField);
 //            for (int i = 0; i < accountNo.length(); i++) {
 //                System.out.printf("Char %d: %c (byte=%d)\n", i, accountNo.charAt(i), (int) accountNo.charAt(i));
@@ -137,7 +139,7 @@ public class PaymentServiceImpl implements PaymentService {
 //            if (!fullQR.matches("^[\\x20-\\x7E]+$")) {
 //                throw new IllegalStateException("QR raw content contains invalid characters.");
 //            }
-//            System.out.println("✅ CRC = " + crc);
+//            System.out.println("CRC = " + crc);
 //            dto.setQrRawContent(fullQR);
 //            dto.setQrCodeBase64(QRCodeUtil.generateQRCodeBase64(fullQR));
 //        }
@@ -174,16 +176,25 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setTransactionId(txId);
 
             // Tạo metadata chứa orderId để webhook đọc được
-            Map<String, String> metadata = new HashMap<>();
-            metadata.put("orderId", String.valueOf(request.getOrderId()));
+//            Map<String, String> metadata = new HashMap<>();
+//            metadata.put("orderId", String.valueOf(request.getOrderId()));
 
             // Tạo PaymentIntent Stripe với metadata
             try {
+                //  Gọi order-service để lấy customerId (userId)
+                String orderUrl = orderServiceUrl + "/api/orders/" + request.getOrderId();
+                ResponseEntity<OrderResponse> response = restTemplate.getForEntity(orderUrl, OrderResponse.class);
+                Long userId = response.getBody().getCustomerId();
+
+                // Tạo metadata chứa orderId và userId
+                Map<String, String> metadata = new HashMap<>();
+                metadata.put("orderId", String.valueOf(request.getOrderId()));
+                metadata.put("userId", String.valueOf(userId));
                 stripeClientSecret = stripeService.createPaymentIntent(
                         request.getOrderId(),
+                        userId,
                         payment.getAmount().longValue(),
-                        "vnd",
-                        metadata // Thêm metadata vào PaymentIntent
+                        "vnd"
                 );
             } catch (StripeException e) {
                 e.printStackTrace();
