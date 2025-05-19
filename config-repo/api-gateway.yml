@@ -14,10 +14,11 @@ spring:
       default-filters:
         - name: RequestRateLimiter
           args:
-            redis-rate-limiter.replenishRate: 1
-            redis-rate-limiter.burstCapacity: 5
-            redis-rate-limiter.requestedTokens: 1
-            redis-rate-limiter.redis-time-to-live: 60s
+            key-resolver: "#{@remoteAddrKeyResolver}"     # Sử dụng IP làm khóa phân biệt
+            redis-rate-limiter.replenishRate: 5           # Cấp phát 5 token mỗi phút (xem lưu ý bên dưới)
+            redis-rate-limiter.burstCapacity: 5           # Cho phép tối đa 5 request liên tiếp
+            redis-rate-limiter.redis-time-to-live: 60s    # Token key tồn tại trong Redis trong 60 giây
+            redis-rate-limiter.requestedTokens: 1         # Mỗi request tiêu thụ 1 token
             includeHeaders: true
 
       routes:
