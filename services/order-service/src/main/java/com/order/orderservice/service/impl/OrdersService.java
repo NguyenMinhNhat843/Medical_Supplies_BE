@@ -7,13 +7,19 @@ import com.order.orderservice.entity.OrderItem;
 import com.order.orderservice.entity.OrderStatus;
 import com.order.orderservice.entity.PaymentStatus;
 import com.order.orderservice.models.PaymentUpdateRequest;
+import com.order.orderservice.dto.DashboardStats;
+import com.order.orderservice.dto.VoucherApplicationResponseDTO;
+import com.order.orderservice.entity.*;
 import com.order.orderservice.repository.OrderRepository;
+import com.order.orderservice.repository.VoucherRepository;
+import com.order.orderservice.service.inter.VoucherService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -54,18 +60,42 @@ public class OrdersService {
         return orderRepository.save(order);
     }
 
-    public Order updateOrder(Integer id, Order order) {
-        Order existingOrder = orderRepository.findById(id).orElse(null);
-        if (existingOrder != null) {
-            existingOrder.setStatus(order.getStatus());
-            existingOrder.setShippingAddress(order.getShippingAddress());
-            existingOrder.setTotalAmount(order.getTotalAmount());
-            existingOrder.setPaymentStatus(order.getPaymentStatus());
-            existingOrder.setPaymentMethod(order.getPaymentMethod());
-            existingOrder.setTrackingNumber(order.getTrackingNumber());
-            return orderRepository.save(existingOrder);
+    public Order updateOrder(Integer orderId, Order orderDetails) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
+
+        // Giữ giá trị totalAmount hiện có nếu orderDetails không chứa totalAmount
+        if (orderDetails.getTotalAmount() != null) {
+            order.setTotalAmount(orderDetails.getTotalAmount());
         }
-        return null;
+
+        // Cập nhật các trường khác
+        if (orderDetails.getCustomerId() != null) {
+            order.setCustomerId(orderDetails.getCustomerId());
+        }
+        if (orderDetails.getOrderDate() != null) {
+            order.setOrderDate(orderDetails.getOrderDate());
+        }
+        if (orderDetails.getStatus() != null) {
+            order.setStatus(orderDetails.getStatus());
+        }
+        if (orderDetails.getShippingAddress() != null) {
+            order.setShippingAddress(orderDetails.getShippingAddress());
+        }
+        if (orderDetails.getPaymentStatus() != null) {
+            order.setPaymentStatus(orderDetails.getPaymentStatus());
+        }
+        if (orderDetails.getPaymentMethod() != null) {
+            order.setPaymentMethod(orderDetails.getPaymentMethod());
+        }
+        if (orderDetails.getTrackingNumber() != null) {
+            order.setTrackingNumber(orderDetails.getTrackingNumber());
+        }
+        if (orderDetails.getVoucherCode() != null) {
+            order.setVoucherCode(orderDetails.getVoucherCode());
+        }
+
+        return orderRepository.save(order);
     }
 
     public void deleteOrder(Integer id) {
@@ -133,5 +163,84 @@ public class OrdersService {
         order.setStatus(OrderStatus.valueOf(req.getStatus().toUpperCase()));
         orderRepository.save(order);
         return true;
+    }
+    // Phương thức mới: Tính doanh thu và số lượng đơn hàng theo khoảng thời gian
+    public DashboardStats getRevenueByDateRange(LocalDate startDate, LocalDate endDate) {
+        // Nếu không có ngày bắt đầu/kết thúc, mặc định lấy 7 ngày gần nhất
+        if (startDate == null || endDate == null) {
+            endDate = LocalDate.now(); // Ngày hiện tại: 17/05/2025
+            startDate = endDate.minusDays(7); // 7 ngày trước
+        }
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.plusDays(1).atStartOfDay();
+
+        // Lấy danh sách đơn hàng trong khoảng thời gian
+        List<Order> orders = orderRepository.findByOrderDateBetween(start, end);
+
+        // Tính tổng doanh thu và số lượng đơn hàng (loại bỏ đơn bị hủy)
+        double totalRevenue = orders.stream()
+                .filter(order -> order.getStatus() != null && !order.getStatus().equals(OrderStatus.CANCELLED))
+                .mapToDouble(Order::getTotalAmount)
+                .sum();
+
+        long orderCount = orders.stream()
+                .filter(order -> order.getStatus() != null && !order.getStatus().equals(OrderStatus.CANCELLED))
+                .count();
+
+        return new DashboardStats(totalRevenue, orderCount);
+    }
+
+    public List<Order> getOrdersByDateRange(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null || endDate == null) {
+            endDate = LocalDate.now();
+            startDate = endDate.minusDays(7);
+        }
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.plusDays(1).atStartOfDay();
+        return orderRepository.findByOrderDateBetween(start, end);
+    }
+
+    @Autowired
+    private VoucherService voucherService;
+
+    public VoucherApplicationResponseDTO applyVoucherToOrder(Integer orderId, String voucherCode, HttpServletRequest request) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order == null) throw new RuntimeException("Đơn hàng không tồn tại");
+
+        Voucher voucher = voucherService.getVoucherByCode(voucherCode) // Sửa: Dùng voucherCode thay vì id
+                .orElseThrow(() -> new RuntimeException("Voucher không hợp lệ hoặc đã hết hạn"));
+
+        if (voucher.getUsedCount() >= voucher.getMaxUsage()) {
+            throw new RuntimeException("Voucher đã đạt giới hạn sử dụng");
+        }
+
+        double originalAmount = order.getTotalAmount();
+        double discount = calculateDiscount(originalAmount, voucher);
+        double finalAmount = originalAmount - discount;
+
+        order.setTotalAmount(finalAmount);
+        order.setVoucherCode(voucherCode);
+        voucher.setUsedCount(voucher.getUsedCount() + 1);
+
+        voucherService.updateVoucher(voucher.getId(), voucher); // Cập nhật số lần sử dụng
+        orderRepository.save(order);
+
+        return VoucherApplicationResponseDTO.builder()
+                .orderId(order.getId())
+                .originalAmount(originalAmount)
+                .discountAmount(discount)
+                .finalAmount(finalAmount)
+                .voucherCode(voucherCode)
+                .appliedAt(LocalDateTime.now())
+                .build();
+    }
+
+    private double calculateDiscount(double amount, Voucher voucher) {
+        if ("PERCENTAGE".equals(voucher.getDiscountType())) {
+            return amount * (voucher.getDiscountValue() / 100);
+        } else {
+            return voucher.getDiscountValue();
+        }
+
     }
 }
