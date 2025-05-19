@@ -156,7 +156,7 @@ public class OrderController {
                                                @RequestBody PaymentUpdateRequest request) {
         boolean updated = orderService.updatePaymentInfo(orderId, request);
         return updated
-                ? ResponseEntity.ok("✅ Cập nhật thanh toán đơn hàng thành công.")
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Không tìm thấy đơn hàng");
+                ? ResponseEntity.ok("Cập nhật thanh toán đơn hàng thành công.")
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy đơn hàng");
     }
 }

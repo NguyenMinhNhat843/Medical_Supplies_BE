@@ -19,6 +19,8 @@ public class PaymentDTO {
     private String qrCodeBase64;
     private String qrRawContent;        // Mã QR dạng raw string để scan trực tiếp
     private String qrCodeImageUrl;
+    private String stripeClientSecret;
+
 
 
 }

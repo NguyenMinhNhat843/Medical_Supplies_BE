@@ -13,4 +13,7 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity,Integer> 
 
     boolean existsByOrderId(Integer orderId);
 
+    // Tim theo orderID
+    PaymentEntity findByOrderId(Long orderId);
+
 }

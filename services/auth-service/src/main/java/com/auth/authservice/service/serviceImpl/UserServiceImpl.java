@@ -149,7 +149,6 @@ public class UserServiceImpl implements IUserService {
         createCustomerRequest.setUserId(userEntity.getId());
         createCustomerRequest.setEmail(userRegisterRequest.getEmail());
 
-
         try {
             restTemplate.postForObject("http://USER-SERVICE/users", createCustomerRequest, Void.class);
             System.out.println("✅ Đã gọi auth-service tạo CustomerInfo cho userId: " + userEntity.getId());

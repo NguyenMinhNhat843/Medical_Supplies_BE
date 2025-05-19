@@ -18,7 +18,7 @@ spring:
         - id: order-service
           uri: lb://ORDER-SERVICE
           predicates:
-            - Path=/orders/**, /api/orders/**
+            - Path=/orders/**, /api/orders/** , /api/vocher/**
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
@@ -50,7 +50,7 @@ spring:
         - id: payment-service
           uri: lb://PAYMENT-SERVICE
           predicates:
-            - Path=/api/payments/**
+            - Path=/api/payments/**, /api/stripe/**
         - id: notification-service
           uri: lb://NOTIFICATION-SERVICE
           predicates:

@@ -7,8 +7,10 @@ import com.payment.paymentservice.model.request.PaymentRequest;
 import com.payment.paymentservice.model.request.PaymentUpdateRequest;
 import com.payment.paymentservice.repository.PaymentRepository;
 import com.payment.paymentservice.services.PaymentService;
+import com.payment.paymentservice.services.StripeService;
 import com.payment.paymentservice.utils.CRC16Util;
 import com.payment.paymentservice.utils.QRCodeUtil;
+import com.stripe.exception.StripeException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,9 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -32,8 +32,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private PaymentConverter paymentConverter;
 
-    @Value("${order-service.url}") // ví dụ: http://localhost:8082
+    @Value("${order-service.url}")
     private String orderServiceUrl;
+
+    @Autowired
+    private StripeService stripeService;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -154,21 +157,49 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setStatus("PENDING");
 
         String transferContent = null;
+        String stripeClientSecret = null;
 
-        // Tạo transactionId
+        // Tạo transactionId theo loại thanh toán
         if ("COD".equalsIgnoreCase(payment.getPaymentMethod())) {
             String txId = "COD-" + request.getOrderId() + "-" + System.currentTimeMillis();
             payment.setTransactionId(txId);
+
         } else if ("BANK_TRANSFER".equalsIgnoreCase(payment.getPaymentMethod())) {
             transferContent = "TT_ORDER_" + request.getOrderId();
             String txId = "BANK_" + request.getOrderId() + "_" + System.currentTimeMillis();
             payment.setTransactionId(txId);
+
+        } else if ("VISA".equalsIgnoreCase(payment.getPaymentMethod()) || "STRIPE".equalsIgnoreCase(payment.getPaymentMethod())) {
+            String txId = "STRIPE_" + request.getOrderId() + "_" + System.currentTimeMillis();
+            payment.setTransactionId(txId);
+
+            // Tạo metadata chứa orderId để webhook đọc được
+            Map<String, String> metadata = new HashMap<>();
+            metadata.put("orderId", String.valueOf(request.getOrderId()));
+
+            // Tạo PaymentIntent Stripe với metadata
+            try {
+                stripeClientSecret = stripeService.createPaymentIntent(
+                        request.getOrderId(),
+                        payment.getAmount().longValue(),
+                        "vnd",
+                        metadata // Thêm metadata vào PaymentIntent
+                );
+            } catch (StripeException e) {
+                e.printStackTrace();
+                throw new IllegalStateException("Không thể tạo thanh toán Stripe: " + e.getMessage());
+            }
         }
 
+        // Lưu vào DB
         payment = paymentRepository.save(payment);
         PaymentDTO dto = paymentConverter.toDTO(payment);
 
-        // Gọi order-service để cập nhật trạng thái đơn hàng
+        if (stripeClientSecret != null) {
+            dto.setStripeClientSecret(stripeClientSecret);
+        }
+
+        // Gọi order-service cập nhật trạng thái
         try {
             String url = orderServiceUrl + "/api/orders/" + payment.getOrderId() + "/payment-info";
             PaymentUpdateRequest update = new PaymentUpdateRequest();
@@ -179,8 +210,10 @@ public class PaymentServiceImpl implements PaymentService {
                 update.setPaymentStatus("PAID");
             } else if ("COD".equalsIgnoreCase(request.getPaymentMethod())) {
                 update.setPaymentStatus("UNPAID");
+            } else if ("VISA".equalsIgnoreCase(request.getPaymentMethod()) || "STRIPE".equalsIgnoreCase(request.getPaymentMethod())) {
+                update.setPaymentStatus("UNPAID"); // Chờ webhook cập nhật sau
             } else {
-                update.setPaymentStatus("PAID");
+                update.setPaymentStatus("PAID"); // Mặc định
             }
 
             restTemplate.put(url, update);
@@ -188,17 +221,13 @@ public class PaymentServiceImpl implements PaymentService {
             e.printStackTrace();
         }
 
-        //  Nếu là chuyển khoản thì gán transferContent + ảnh QR từ VietQR
         if (transferContent != null) {
             dto.setTransferContent(transferContent);
 
-            // Dữ liệu tài khoản cố định
             String bankBin = "970432";
             String accountNo = "26303241603";
             String accountName = URLEncoder.encode("LE PHUOC NGUYEN", StandardCharsets.UTF_8);
             long amount = payment.getAmount().longValue();
-
-            // Template ID lấy từ VietQR dashboard
             String templateId = "75qHkWq";
 
             String qrImageUrl = String.format(
@@ -206,14 +235,11 @@ public class PaymentServiceImpl implements PaymentService {
                     bankBin, accountNo, templateId, accountName, amount
             );
 
-            dto.setQrCodeImageUrl(qrImageUrl); // frontend dùng ảnh này để render
+            dto.setQrCodeImageUrl(qrImageUrl);
         }
 
         return dto;
     }
-
-
-
     @Override
     public PaymentDTO updatePaymentStatus(Long id, String status) {
         PaymentEntity payment = paymentRepository.findById(Math.toIntExact(id)).orElse(null);
@@ -251,7 +277,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     // Debug QR content chuẩn CRC16
     public void logQRBreakdown(String qrRawContent) {
-        System.out.println("\n🔍 Breakdown QR Content:");
+        System.out.println("\n Breakdown QR Content:");
         int i = 0;
         while (i + 4 <= qrRawContent.length()) {
             String tag = qrRawContent.substring(i, i + 2);
