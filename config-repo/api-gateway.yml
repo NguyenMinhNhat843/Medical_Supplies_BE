@@ -4,8 +4,22 @@ server:
 spring:
   application:
     name: api-gateway
+
+  redis:
+    host: localhost
+    port: 6379
+
   cloud:
     gateway:
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 1
+            redis-rate-limiter.burstCapacity: 5
+            redis-rate-limiter.requestedTokens: 1
+            redis-rate-limiter.redis-time-to-live: 60s
+            includeHeaders: true
+
       routes:
         - id: auth-service
           uri: lb://AUTH-SERVICE
@@ -46,7 +60,7 @@ spring:
         - id: admin-dashboard-service
           uri: lb://ADMIN-DASHBOARD-SERVICE
           predicates:
-            - Path=/api/inventory/**
+            - Path=/api/dashboard/**
         - id: payment-service
           uri: lb://PAYMENT-SERVICE
           predicates:
