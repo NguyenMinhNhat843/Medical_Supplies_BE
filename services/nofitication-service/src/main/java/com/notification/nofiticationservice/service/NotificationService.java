@@ -37,9 +37,9 @@ public class NotificationService {
             // Gửi email
             SimpleMailMessage email = new SimpleMailMessage();
             email.setTo(user.getEmail());
-            email.setSubject("Thông báo từ Shop");
+            email.setSubject("Thông báo từ Shop Medical_Supplies: ");
             email.setText(message);
-            email.setFrom("your-email@gmail.com");
+            email.setFrom("nhanmpt000@gmail.com");
 
             try {
                 mailSender.send(email);

@@ -49,6 +49,9 @@ public class OrdersService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
 
+        // Lưu trạng thái cũ để so sánh
+        OrderStatus oldStatus = order.getStatus();
+
         // Giữ giá trị totalAmount hiện có nếu orderDetails không chứa totalAmount
         if (orderDetails.getTotalAmount() != null) {
             order.setTotalAmount(orderDetails.getTotalAmount());
@@ -80,7 +83,11 @@ public class OrdersService {
             order.setVoucherCode(orderDetails.getVoucherCode());
         }
 
-        return orderRepository.save(order);
+        Order updatedOrder = orderRepository.save(order);
+
+        // Trả về đơn hàng cập nhật cùng với trạng thái cũ (để sử dụng trong controller)
+        updatedOrder.setOldStatus(oldStatus); // Giả sử có một trường tạm thời trong Order để lưu oldStatus
+        return updatedOrder;
     }
 
     public void deleteOrder(Integer id) {
