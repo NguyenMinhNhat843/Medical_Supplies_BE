@@ -3,16 +3,21 @@ package com.product.productservice.service.impl;
 import com.product.productservice.converter.ProductConverter;
 import com.product.productservice.dto.ProductDTO;
 import com.product.productservice.entity.CategoryEntity;
+import com.product.productservice.entity.FavoriteProductEntity;
 import com.product.productservice.entity.ProductEntity;
+import com.product.productservice.models.ProductSearchRequest;
+import com.product.productservice.models.ProductSpecification;
 import com.product.productservice.repository.CategoryRepository;
+import com.product.productservice.repository.FavoriteProductRepository;
 import com.product.productservice.repository.ProductRepository;
-import com.product.productservice.repository.repositorycustom.ProuductRepositoryCustom;
-import com.product.productservice.repository.repositorycustom.impl.ProductRepositoryCustomImpl;
+import com.product.productservice.repository.repositorycustom.ProductRepositoryCustom;
 import com.product.productservice.service.IProductService;
-import org.modelmapper.ModelMapper;
+import com.product.productservice.utils.UploadFileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.apache.commons.codec.binary.Base64;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,24 +32,42 @@ public class ProductServiceImpl implements IProductService {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private ProuductRepositoryCustom productRepositoryCustomImpl;
+    private ProductRepositoryCustom productRepositoryCustomImpl;
 
     @Autowired
     private ProductConverter productConverter;
+
+    @Autowired
+    private UploadFileUtils uploadFileUtils;
+
+
+    @Autowired
+    private FavoriteProductRepository favoriteRepo;
     @Override
     public ProductDTO createOrUpdateProduct(ProductDTO productDto)
     {
         ProductEntity product;
+
         if (productDto.getId() != null) {
-            Optional<ProductEntity> existing = productRepository.findById(productDto.getId());
-            if (existing.isPresent()) {
-                product = productConverter.toEntity(productDto, existing.get());
-            } else {
-                throw new IllegalArgumentException("Product with ID " + productDto.getId() + " not found");
-            }
+            product = productRepository.findById(productDto.getId())
+                    .map(existing -> productConverter.toEntity(productDto, existing))
+                    .orElseThrow(() -> new IllegalArgumentException("Product not found"));
         } else {
             product = productConverter.toEntity(productDto);
         }
+
+
+        if (productDto.getImageBase64() != null && productDto.getImageName() != null) {
+            String path = "/product/" + productDto.getImageName();
+            if (product.getImage() != null && !path.equals(product.getImage())) {
+                uploadFileUtils.deleteFile(product.getImage());
+            }
+
+            byte[] bytes = Base64.decodeBase64(productDto.getImageBase64().getBytes());
+            uploadFileUtils.writeOrUpdate(path, bytes);
+            product.setImage(path);
+        }
+
         return productConverter.convertToDto(productRepository.save(product));
     }
 
@@ -71,10 +94,18 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public ProductDTO getProductById(Long id) {
-        return productRepository.findById(id)
-                .map(productConverter::convertToDto)
-                .orElse(null);
+    public ProductDTO getProductById(Long id, Long userId) {
+        ProductEntity product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
+
+        ProductDTO dto = productConverter.convertToDto(product);
+
+        if (userId != null) {
+            boolean isFav = favoriteRepo.existsByUserIdAndProductId(userId, id);
+            dto.setIsFavorite(isFav);
+        }
+
+        return dto;
     }
 
     @Override
@@ -84,13 +115,19 @@ public class ProductServiceImpl implements IProductService {
                 .collect(Collectors.toList());
     }
 
+
+    // Lấy danh sách sản phẩm theo danh mục
     @Override
-    public List<ProductDTO> getProductsByCategory(Long categoryId) {
-        Optional<CategoryEntity> category = categoryRepository.findById(categoryId);
-        return category.map(cat -> cat.getProducts().stream()
-                        .map(productConverter::convertToDto)
-                        .collect(Collectors.toList()))
-                .orElse(List.of());
+    public List<ProductDTO> getProductsByCategory(Long categoryId, Long userId) {
+        List<ProductEntity> products = productRepository.findByCategoryId(categoryId); // tùy bạn viết
+        List<ProductDTO> dtos = products.stream().map(productConverter::convertToDto).toList();
+
+        if (userId != null) {
+            List<Long> favoriteIds = favoriteRepo.findByUserId(userId).stream()
+                    .map(FavoriteProductEntity::getProductId).toList();
+            dtos.forEach(p -> p.setIsFavorite(favoriteIds.contains(p.getId())));
+        }
+        return dtos;
     }
 
     @Override
@@ -101,7 +138,6 @@ public class ProductServiceImpl implements IProductService {
                 .map(productConverter::convertToDto)
                 .collect(Collectors.toList());
     }
-
     @Override
     public List<ProductDTO> searchProductsByNameAndCategory(String keyword,String categoryName) {
         List<ProductEntity> products;
@@ -132,6 +168,7 @@ public class ProductServiceImpl implements IProductService {
                 .toList();
     }
 
+
     @Override
     public List<ProductDTO> searchProductsByKeyword(String keyword) {
         if (keyword == null || keyword.isBlank()) {
@@ -154,6 +191,61 @@ public class ProductServiceImpl implements IProductService {
                 })
                 .map(productConverter::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductDTO> advancedSearchProducts(ProductSearchRequest request, Long userId) {
+        List<ProductEntity> products = productRepository.advancedSearch(request);
+        List<ProductDTO> result = products.stream()
+                .map(productConverter::convertToDto)
+                .collect(Collectors.toList());
+
+        if (userId != null) {
+            // Lấy danh sách ID sản phẩm đã được user yêu thích
+            List<Long> favoriteIds = favoriteRepo.findByUserId(userId)
+                    .stream()
+                    .map(FavoriteProductEntity::getProductId)
+                    .toList();
+
+            // Gắn cờ isFavorite cho từng sản phẩm trong kết quả
+            result.forEach(dto -> dto.setIsFavorite(favoriteIds.contains(dto.getId())));
+        }
+
+        return result;
+    }
+
+    // Get filter options for advanced search
+    @Override
+    public Map<String, List<String>> getFilterOptions() {
+        return productRepository.getFilterOptions();
+    }
+
+    @Override
+    public List<ProductDTO> getAllProductsWithFavorites(Long userId) {
+        List<Long> favoriteIds = favoriteRepo.findByUserId(userId).stream()
+                .map(FavoriteProductEntity::getProductId)
+                .toList();
+
+        return productRepository.findAll().stream()
+                .map(p -> {
+                    ProductDTO dto = productConverter.convertToDto(p);
+                    dto.setIsFavorite(favoriteIds.contains(p.getId()));
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public List<ProductDTO> getProductsByIds(List<Long> ids) {
+        return productRepository.findAllById(ids).stream()
+                .map(productConverter::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean existsById(Long productId) {
+        return productRepository.existsById(productId);
     }
 }
 

@@ -14,11 +14,11 @@ spring:
         - id: product-service
           uri: lb://PRODUCT-SERVICE
           predicates:
-            - Path=/api/products/**, /api/category/**
+            - Path=/api/products/**, /api/category/**, /api/picture/repository/**
         - id: order-service
           uri: lb://ORDER-SERVICE
           predicates:
-            - Path=/orders/**, /api/orders/**
+            - Path=/orders/**, /api/notifications/** , /api/vouchers/**
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
@@ -44,9 +44,21 @@ spring:
           predicates:
             - Path=/api/inventory/**
         - id: admin-dashboard-service
-          uri: lb://ADMINDASHBOARD-SERVICE
+          uri: lb://ADMIN-DASHBOARD-SERVICE
           predicates:
             - Path=/api/inventory/**
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/payments/**, /api/stripe/**
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/api/notification/**
+        - id: recommend-service
+          uri: lb://RECOMMEND-SERVICE
+          predicates:
+            - Path=/api/recommend/**
 
   jwt:
     secretKey: mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM

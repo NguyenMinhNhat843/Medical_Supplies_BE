@@ -15,3 +15,6 @@ spring:
     show-sql: true
   jwt:
     secretKey: mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM
+auth-service:
+  url: http://AUTH-SERVICE
+

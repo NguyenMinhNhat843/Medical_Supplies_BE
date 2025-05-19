@@ -2,6 +2,11 @@ package com.order.orderservice.service.impl;
 
 import com.order.orderservice.client.CartClient;
 import com.order.orderservice.dto.CartWithItemsDTO;
+import com.order.orderservice.entity.Order;
+import com.order.orderservice.entity.OrderItem;
+import com.order.orderservice.entity.OrderStatus;
+import com.order.orderservice.entity.PaymentStatus;
+import com.order.orderservice.models.PaymentUpdateRequest;
 import com.order.orderservice.dto.DashboardStats;
 import com.order.orderservice.dto.VoucherApplicationResponseDTO;
 import com.order.orderservice.entity.*;
@@ -10,11 +15,14 @@ import com.order.orderservice.repository.VoucherRepository;
 import com.order.orderservice.service.inter.VoucherService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +33,13 @@ public class OrdersService {
 
     @Autowired
     private CartClient cartClient;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+
+    @Value("${payment-service.url}")
+    private String paymentServiceUrl;
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -133,6 +148,29 @@ public class OrdersService {
         return savedOrder;
     }
 
+    // Cập nhật trạng thái đơn hàng từ COD sang PENDING
+    public boolean updateCODStatus(Integer orderId) {
+        Optional<Order> optional = orderRepository.findById(orderId);
+        if (optional.isEmpty()) return false;
+        Order order = optional.get();
+        order.setStatus(OrderStatus.PENDING);
+        order.setPaymentStatus(PaymentStatus.UNPAID);
+        order.setPaymentMethod("COD");
+        orderRepository.save(order);
+        return true;
+    }
+
+    public boolean updatePaymentInfo(Integer orderId, PaymentUpdateRequest req) {
+        Optional<Order> optional = orderRepository.findById(orderId);
+        if (optional.isEmpty()) return false;
+
+        Order order = optional.get();
+        order.setPaymentMethod(req.getPaymentMethod());
+        order.setPaymentStatus(PaymentStatus.valueOf(req.getPaymentStatus().toUpperCase()));
+        order.setStatus(OrderStatus.valueOf(req.getStatus().toUpperCase()));
+        orderRepository.save(order);
+        return true;
+    }
     // Phương thức mới: Tính doanh thu và số lượng đơn hàng theo khoảng thời gian
     public DashboardStats getRevenueByDateRange(LocalDate startDate, LocalDate endDate) {
         // Nếu không có ngày bắt đầu/kết thúc, mặc định lấy 7 ngày gần nhất
@@ -210,5 +248,6 @@ public class OrdersService {
         } else {
             return voucher.getDiscountValue();
         }
+
     }
 }

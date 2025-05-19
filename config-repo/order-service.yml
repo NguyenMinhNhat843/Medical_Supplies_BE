@@ -15,5 +15,7 @@ spring:
     show-sql: true
   application:
     name: order-service
+payment-service:
+  url: http://PAYMENT-SERVICE
 
 
