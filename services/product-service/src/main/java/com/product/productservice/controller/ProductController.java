@@ -2,6 +2,7 @@ package com.product.productservice.controller;
 
 import com.product.productservice.dto.ProductDTO;
 import com.product.productservice.models.ProductSearchRequest;
+import com.product.productservice.service.IFavoriteService;
 import com.product.productservice.service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,12 +21,14 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
+    @Autowired
+    private IFavoriteService favoriteService;
 //    @PostMapping("/create")
 //    public ResponseEntity<ProductDTO> createOrUpdate(@RequestBody ProductDTO productDto) {
 //        return ResponseEntity.ok(productService.createOrUpdateProduct(productDto));
 //    }
 
-    // Admin có quyền tạo sản phẩm
+    // Admin có quyền tạo sản phẩm hoặc cập nhật sản phẩm
     @PostMapping("/create")
     public ResponseEntity<ProductDTO> createOrUpdate(
             @RequestHeader("X-Role") String role,
@@ -38,6 +41,7 @@ public class ProductController {
     return ResponseEntity.ok(productService.createOrUpdateProduct(productDto));
 }
 
+    // Admin xóa sản phẩm
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@RequestHeader("X-Role") String role, @PathVariable Long id) {
         if (!"ADMIN".equalsIgnoreCase(role)) {
@@ -47,19 +51,67 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+    // Lấy thông tin sản phẩm theo id
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.getProductById(id));
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id, @RequestHeader(value = "X-UserId", required = false) Long userId) {
+        return ResponseEntity.ok(productService.getProductById(id, userId));
     }
 
+    // Lấy tất cả sản phẩm khongo co favorite
+//    @GetMapping("/list")
+//    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+//        return ResponseEntity.ok(productService.getAllProducts());
+//    }
+
+    // Lấy tất cả sản phẩm có favorite
     @GetMapping("/list")
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
+    public ResponseEntity<List<ProductDTO>> getAllProducts(
+            @RequestHeader(value = "X-UserId", required = false) Long userId
+    ) {
+        if (userId != null) {
+            return ResponseEntity.ok(productService.getAllProductsWithFavorites(userId));
+        }
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
+    // Them sản phẩm vào danh sách yêu thích
+    @PostMapping("/favorite/{productId}")
+    public ResponseEntity<String> addToFavorite(
+            @RequestHeader("X-UserId") Long userId,
+            @PathVariable Long productId
+    ) {
+        try {
+            String msg = favoriteService.addToFavorite(userId, productId);
+            return ResponseEntity.ok(msg);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        }
+    }
+
+    // Xóa sản phẩm khỏi danh sách yêu thích
+    @DeleteMapping("/favorite/{productId}")
+    public ResponseEntity<String> removeFavorite(
+            @RequestHeader("X-UserId") Long userId,
+            @PathVariable Long productId
+    ) {
+        try {
+            String msg = favoriteService.removeFromFavorite(userId, productId);
+            return ResponseEntity.ok(msg);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
+    }
+
+    // Danh sách yêu thích
+    @GetMapping("/favorites")
+    public ResponseEntity<List<ProductDTO>> getFavorites(@RequestHeader("X-UserId") Long userId) {
+        return ResponseEntity.ok(favoriteService.getFavorites(userId));
+    }
+
+    // Lấy tất cả sản phẩm theo danh mục
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable Long categoryId) {
-        return ResponseEntity.ok(productService.getProductsByCategory(categoryId));
+    public ResponseEntity<List<ProductDTO>> getProductsByCategory(@PathVariable Long categoryId,  @RequestHeader(value = "X-UserId", required = false) Long userId) {
+        return ResponseEntity.ok(productService.getProductsByCategory(categoryId, userId));
     }
 
 
@@ -71,19 +123,23 @@ public class ProductController {
 //        List<ProductDTO> products = productService.searchProductsByNameAndCategory(keyword, categoryName);
 //        return ResponseEntity.ok(products);
 //    }
+
+    // Tìm kiếm sản phẩm
     @GetMapping("/search")
-    public ResponseEntity<List<ProductDTO>> searchProducts(@ModelAttribute ProductSearchRequest request) {
-        return ResponseEntity.ok(productService.advancedSearchProducts(request));
+    public ResponseEntity<List<ProductDTO>> searchProducts(@ModelAttribute ProductSearchRequest request, @RequestHeader(value = "X-UserId", required = false) Long userId) {
+        return ResponseEntity.ok(productService.advancedSearchProducts(request, userId));
     }
 
+    // Chat-service gọi qua API
     @GetMapping("/ai/search")
     public ResponseEntity<List<ProductDTO>> searchByKeyword(@RequestParam String keyword) {
         String decodedKeyword = URLDecoder.decode(keyword, StandardCharsets.UTF_8);
-        System.out.println("📥 Từ khóa đã decode: " + decodedKeyword);
+        System.out.println("Từ khóa đã decode: " + decodedKeyword);
         List<ProductDTO> results = productService.searchProductsByKeyword(decodedKeyword);
         return ResponseEntity.ok(results);
     }
 
+    // Lọc sản phẩm theo các thuộc tính cho advanced search
     @GetMapping("/filters")
     public ResponseEntity<Map<String, List<String>>> getFilters() {
         return ResponseEntity.ok(productService.getFilterOptions());
