@@ -21,6 +21,6 @@ public class RateLimiterConfig {
     @Bean
     @Primary
     public RateLimiter<Object> fixedWindowRateLimiter() {
-        return new FixedWindowRateLimiter(5, 60); // 5 requests mỗi 60 giây
+        return new FixedWindowRateLimiter(10, 60); // 5 requests mỗi 60 giây
     }
 }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "inventory") // Tên bảng trong cơ sở dữ liệu
@@ -18,11 +19,17 @@ public class Inventory {
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Tự động tăng ID
     private Long id; // Mã sản phẩm
 
-    private String name; // Tên sản phẩm
-
-    private String description; // Mô tả sản phẩm
+    @Column(name = "product_id")
+    private Long productId;
 
     private int quantity; // Số lượng sản phẩm trong kho
 
-    private double price; // Giá của sản phẩm
+    @Column(name = "last_update")
+    private LocalDateTime lastUpdate;
+
+    @PrePersist
+    @PreUpdate
+    public void prePersist() {
+        lastUpdate = LocalDateTime.now();
+    }
 }
