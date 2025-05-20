@@ -35,13 +35,13 @@ public class CustomerController {
         return customerService.getCustomerByUserId(userId);
     }
 
-    // Cập nhật thông tin bản thân
-//    @PostMapping("/me")
-//    public CustomerEntity saveProfile(@RequestHeader("X-UserId") Long userId, @RequestBody CustomerEntity profile) {
-//       //Long userId = Long.parseLong(user.getName());
-//        profile.setUserId(userId);
-//        return customerService.saveCustomer(profile);
-//    }
+//     Cập nhật thông tin bản thân
+    @PostMapping("/me/demo")
+    public CustomerEntity saveProfile(@RequestHeader("X-UserId") Long userId, @RequestBody CustomerEntity profile) {
+       //Long userId = Long.parseLong(user.getName());
+        profile.setUserId(userId);
+        return customerService.saveCustomer(profile);
+    }
 
     // Cập nhật thông tin cá nhân
     @PutMapping("/me")
