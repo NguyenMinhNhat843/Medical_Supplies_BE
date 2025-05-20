@@ -26,5 +26,9 @@ public class CartItemClient {
         CartItemDTO[] response = restTemplate.getForObject(url, CartItemDTO[].class);
         return Arrays.asList(response);
     }
+    public void updateCartItem(Long cartItemId, CartItemRequest request) {
+        String url = BASE_URL + "/" + cartItemId;
+        restTemplate.put(url, request);
+    }
 }
 

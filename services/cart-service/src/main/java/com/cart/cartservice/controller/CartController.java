@@ -127,10 +127,10 @@ public class CartController {
         }
         Long userId = (Long) userIdResponse.getBody();
 
-        // Thêm vào cart (tạo Cart + gọi cartItem-service để thêm sản phẩm)
+        // Thêm vào cart
         cartService.addToCart(userId, addToCartRequest.getProductId(), addToCartRequest.getQuantity());
 
-        // Gọi lại hàm lấy chi tiết cart để trả về luôn thông tin đầy đủ sản phẩm
+        // Lấy chi tiết giỏ hàng để trả về
         CartWithItemsDTO detailedCart = cartService.getCartWithProductDetails(userId);
         return ResponseEntity.ok(detailedCart);
     }

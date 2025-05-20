@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -28,6 +29,19 @@ public class CartItemService implements CartItem_interface {
     @Override
     public List<CartItem> getItemsByCartId(Long cartId) {
         return cartItemRepository.findByCartId(cartId);
+    }
+
+    @Override
+    public Optional<CartItem> updateCartItem(Long cartItemId, CartItemRequest request) {
+        Optional<CartItem> cartItemOpt = cartItemRepository.findById(cartItemId);
+        if (cartItemOpt.isPresent()) {
+            CartItem cartItem = cartItemOpt.get();
+            cartItem.setQuantity(request.getQuantity());
+            // Cập nhật các trường khác nếu cần, ví dụ: cartId, productId
+            cartItemRepository.save(cartItem);
+            return Optional.of(cartItem);
+        }
+        return Optional.empty();
     }
 }
 

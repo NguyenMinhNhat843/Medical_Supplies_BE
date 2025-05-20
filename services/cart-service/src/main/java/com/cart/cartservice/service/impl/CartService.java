@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,13 +61,27 @@ public class CartService implements cart_interface {
 
     @Override
     public CartWithItems addToCart(Long userId, Long productId, int quantity) {
-        // 1. Tìm hoặc tạo cart mới
+        // 1. Tìm hoặc tạo giỏ hàng mới
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> cartRepository.save(new Cart(userId)));
 
-        // 2. Gửi request tạo cartItem
-        CartItemRequest request = new CartItemRequest(cart.getId(), productId, quantity);
-        cartItemClient.createCartItem(request);
+        // 2. Kiểm tra xem CartItem với productId đã tồn tại chưa
+        List<CartItemDTO> existingItems = cartItemClient.getItemsByCartId(cart.getId());
+        Optional<CartItemDTO> existingItem = existingItems.stream()
+                .filter(item -> item.getProductId().equals(productId))
+                .findFirst();
+
+        if (existingItem.isPresent()) {
+            // Cập nhật số lượng của CartItem hiện có
+            CartItemDTO item = existingItem.get();
+            int newQuantity = item.getQuantity() + quantity;
+            CartItemRequest updateRequest = new CartItemRequest(cart.getId(), productId, newQuantity);
+            cartItemClient.updateCartItem(item.getId(), updateRequest); // Giả sử updateCartItem tồn tại
+        } else {
+            // Tạo CartItem mới
+            CartItemRequest request = new CartItemRequest(cart.getId(), productId, quantity);
+            cartItemClient.createCartItem(request);
+        }
 
         // 3. Lấy lại danh sách item từ cart-item-service
         List<CartItemDTO> items = cartItemClient.getItemsByCartId(cart.getId());

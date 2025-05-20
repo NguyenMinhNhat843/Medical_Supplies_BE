@@ -28,4 +28,13 @@ public class CartItemController {
     public List<CartItem> getItemsByCartId(@PathVariable Long cartId) {
         return cartItemService.getItemsByCartId(cartId);
     }
+
+    @PutMapping("/{cartItemId}")
+    public ResponseEntity<Void> updateCartItem(@PathVariable Long cartItemId, @RequestBody CartItemRequest request) {
+        Optional<CartItem> updatedItem = cartItemService.updateCartItem(cartItemId, request);
+        if (updatedItem.isPresent()) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
 }
