@@ -30,5 +30,20 @@ public class CartItemClient {
         String url = BASE_URL + "/" + cartItemId;
         restTemplate.put(url, request);
     }
+
+    public void deleteCartItem(Long cartItemId) {
+        String url = BASE_URL + "/" + cartItemId;
+        restTemplate.delete(url);
+    }
+
+    public void incrementCartItemQuantity(Long cartItemId, int amount) {
+        String url = BASE_URL + "/" + cartItemId + "/increment?amount=" + amount;
+        restTemplate.postForObject(url, null, Void.class);
+    }
+
+    public void decrementCartItemQuantity(Long cartItemId, int amount) {
+        String url = BASE_URL + "/" + cartItemId + "/decrement?amount=" + amount;
+        restTemplate.postForObject(url, null, Void.class);
+    }
 }
 

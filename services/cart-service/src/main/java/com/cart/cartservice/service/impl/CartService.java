@@ -8,7 +8,9 @@ import com.cart.cartservice.repository.CartRepository;
 import com.cart.cartservice.service.inter.cart_interface;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -118,6 +120,53 @@ public class CartService implements cart_interface {
         result.setItems(detailedItems);
 
         return result;
+    }
+
+    @Override
+    public CartWithItems deleteCartItem(Long userId, Long cartItemId) {
+        // 1. Tìm giỏ hàng của người dùng
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+
+        // 2. Xóa CartItem thông qua CartItemClient
+        cartItemClient.deleteCartItem(cartItemId);
+
+        // 3. Lấy lại danh sách item từ cart-item-service
+        List<CartItemDTO> items = cartItemClient.getItemsByCartId(cart.getId());
+
+        return new CartWithItems(cart, items);
+    }
+
+    @Override
+    public CartWithItems incrementCartItemQuantity(Long userId, Long cartItemId, int amount) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+        try {
+            cartItemClient.incrementCartItemQuantity(cartItemId, amount);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new RuntimeException("CartItem not found: " + cartItemId);
+            }
+            throw e;
+        }
+        List<CartItemDTO> items = cartItemClient.getItemsByCartId(cart.getId());
+        return new CartWithItems(cart, items);
+    }
+
+    @Override
+    public CartWithItems decrementCartItemQuantity(Long userId, Long cartItemId, int amount) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+        try {
+            cartItemClient.decrementCartItemQuantity(cartItemId, amount);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new RuntimeException("CartItem not found: " + cartItemId);
+            }
+            throw e;
+        }
+        List<CartItemDTO> items = cartItemClient.getItemsByCartId(cart.getId());
+        return new CartWithItems(cart, items);
     }
 }
 

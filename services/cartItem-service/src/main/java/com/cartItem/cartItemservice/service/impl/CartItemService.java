@@ -43,5 +43,48 @@ public class CartItemService implements CartItem_interface {
         }
         return Optional.empty();
     }
+
+    @Override
+    public boolean deleteCartItem(Long cartItemId) {
+        if (cartItemRepository.existsById(cartItemId)) {
+            cartItemRepository.deleteById(cartItemId);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Optional<CartItem> incrementQuantity(Long cartItemId, int amount) {
+        Optional<CartItem> cartItemOpt = cartItemRepository.findById(cartItemId);
+        if (cartItemOpt.isPresent()) {
+            CartItem cartItem = cartItemOpt.get();
+            int newQuantity = cartItem.getQuantity() + amount;
+            if (newQuantity <= 0) {
+                cartItemRepository.deleteById(cartItemId);
+                return Optional.empty();
+            }
+            cartItem.setQuantity(newQuantity);
+            cartItemRepository.save(cartItem);
+            return Optional.of(cartItem);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<CartItem> decrementQuantity(Long cartItemId, int amount) {
+        Optional<CartItem> cartItemOpt = cartItemRepository.findById(cartItemId);
+        if (cartItemOpt.isPresent()) {
+            CartItem cartItem = cartItemOpt.get();
+            int newQuantity = cartItem.getQuantity() - amount;
+            if (newQuantity <= 0) {
+                cartItemRepository.deleteById(cartItemId);
+                return Optional.empty();
+            }
+            cartItem.setQuantity(newQuantity);
+            cartItemRepository.save(cartItem);
+            return Optional.of(cartItem);
+        }
+        return Optional.empty();
+    }
 }
 

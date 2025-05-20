@@ -3,6 +3,7 @@ package com.cart.cartservice.controller;
 import com.cart.cartservice.Client.CartItemClient;
 import com.cart.cartservice.dto.AddToCartRequest;
 import com.cart.cartservice.dto.CartItemDTO;
+import com.cart.cartservice.dto.CartWithItems;
 import com.cart.cartservice.dto.CartWithItemsDTO;
 import com.cart.cartservice.entity.Cart;
 import com.cart.cartservice.service.inter.cart_interface;
@@ -133,5 +134,52 @@ public class CartController {
         // Lấy chi tiết giỏ hàng để trả về
         CartWithItemsDTO detailedCart = cartService.getCartWithProductDetails(userId);
         return ResponseEntity.ok(detailedCart);
+    }
+
+    @DeleteMapping("/items/{cartItemId}")
+    public ResponseEntity<CartWithItemsDTO> deleteCartItem(HttpServletRequest request, @PathVariable Long cartItemId) {
+        ResponseEntity<?> userIdResponse = extractUserId(request);
+        if (userIdResponse.getStatusCode() != HttpStatus.OK) {
+            return ResponseEntity.status(userIdResponse.getStatusCode()).body(null);
+        }
+        Long userId = (Long) userIdResponse.getBody();
+
+        CartWithItems cartWithItems = cartService.deleteCartItem(userId, cartItemId);
+        CartWithItemsDTO detailedCart = cartService.getCartWithProductDetails(userId);
+        return ResponseEntity.ok(detailedCart);
+    }
+
+    @PostMapping("/items/{cartItemId}/increment")
+    public ResponseEntity<?> incrementCartItemQuantity(HttpServletRequest request, @PathVariable Long cartItemId, @RequestParam(defaultValue = "1") int amount) {
+        ResponseEntity<?> userIdResponse = extractUserId(request);
+        if (userIdResponse.getStatusCode() != HttpStatus.OK) {
+            return userIdResponse;
+        }
+        Long userId = (Long) userIdResponse.getBody();
+
+        try {
+            CartWithItems cartWithItems = cartService.incrementCartItemQuantity(userId, cartItemId, amount);
+            CartWithItemsDTO detailedCart = cartService.getCartWithProductDetails(userId);
+            return ResponseEntity.ok(detailedCart);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/items/{cartItemId}/decrement")
+    public ResponseEntity<?> decrementCartItemQuantity(HttpServletRequest request, @PathVariable Long cartItemId, @RequestParam(defaultValue = "1") int amount) {
+        ResponseEntity<?> userIdResponse = extractUserId(request);
+        if (userIdResponse.getStatusCode() != HttpStatus.OK) {
+            return userIdResponse;
+        }
+        Long userId = (Long) userIdResponse.getBody();
+
+        try {
+            CartWithItems cartWithItems = cartService.decrementCartItemQuantity(userId, cartItemId, amount);
+            CartWithItemsDTO detailedCart = cartService.getCartWithProductDetails(userId);
+            return ResponseEntity.ok(detailedCart);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

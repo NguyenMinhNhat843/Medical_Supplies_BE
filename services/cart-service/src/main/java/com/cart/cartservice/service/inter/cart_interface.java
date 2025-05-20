@@ -18,4 +18,8 @@ public interface cart_interface {
     Cart getCartByUserId(Long userId);
     CartWithItems addToCart(Long userId, Long productId, int quantity);
     CartWithItemsDTO getCartWithProductDetails(Long userId);
+
+    CartWithItems deleteCartItem(Long userId, Long cartItemId);
+    CartWithItems incrementCartItemQuantity(Long userId, Long cartItemId, int amount);
+    CartWithItems decrementCartItemQuantity(Long userId, Long cartItemId, int amount);
 }
