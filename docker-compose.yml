@@ -162,8 +162,8 @@ services:
       SPRING_PROFILES_ACTIVE: native
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
-  notification-service:
-    build: ./services/notification-service
+  nofication-service:
+    build: ./services/nofitication-service
     ports:
       - "8093:8093"
     depends_on:

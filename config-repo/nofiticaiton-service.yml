@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: notification-service
+    name: nofitication-service
   datasource:
     url: jdbc:mysql://mysql-db:3306/notification_service?createDatabaseIfNotExist=true
     username: root
