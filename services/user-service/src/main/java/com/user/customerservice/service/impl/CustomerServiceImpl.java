@@ -100,12 +100,12 @@ public class CustomerServiceImpl implements ICustomerService {
         customer.setLastName(extractLastName(customerUpdate.getFullName()));
         customer.setPhone(customerUpdate.getPhone());
         customer.setAddress(customerUpdate.getAddress());
-        customer.setEmail(customerUpdate.getEmail());
+//        customer.setEmail(customerUpdate.getEmail());
         customer.setGender(customerUpdate.getGender());
         customer.setDateOfBirth(customerUpdate.getDateOfBirth());
 
         CustomerEntity updatedCustomer = customerRepository.save(customer);
-        sendUserUpdateToNotificationService(userId, customerUpdate.getEmail()); // Loại bỏ deviceToken
+        //sendUserUpdateToNotificationService(userId, customerUpdate.getEmail()); // Loại bỏ deviceToken
         return updatedCustomer;
     }
 
@@ -140,7 +140,7 @@ public class CustomerServiceImpl implements ICustomerService {
         customer.setAddress(address);
 
         CustomerEntity updatedCustomer = customerRepository.save(customer);
-        sendUserUpdateToNotificationService(userId, customer.getEmail()); // Loại bỏ deviceToken
+        //sendUserUpdateToNotificationService(userId, customer.getEmail()); // Loại bỏ deviceToken
         return updatedCustomer;
     }
 
