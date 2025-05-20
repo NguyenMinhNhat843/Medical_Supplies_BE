@@ -1,10 +1,7 @@
 package com.user.customerservice.service;
 
 import com.user.customerservice.entity.CustomerEntity;
-import com.user.customerservice.model.CreateAddressRequest;
-import com.user.customerservice.model.CreateCustomerRequest;
-import com.user.customerservice.model.CustomerInfoResponse;
-import com.user.customerservice.model.UpdateCustomerRequest;
+import com.user.customerservice.model.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,5 +20,19 @@ public interface ICustomerService {
     Optional<CustomerEntity> getCustomerByEmail(String email);
 
     CustomerEntity CreateOrUpdateCustomerAddess(Long userId, CreateAddressRequest request);
+
+    void register(UserRegisterRequest request);
+
+    List<UserFullInfoResponse> getStaffAccounts();
+
+    List<UserFullInfoResponse> getCustomerAccounts();
+
+    List<UserFullInfoResponse> searchCustomers(String keyword);
+
+    List<UserFullInfoResponse> searchByRoleAndKeyword(String roleGroup, String keyword);
+    List<UserFullInfoResponse> searchStaffByKeywordAndRole(String keyword, String roleFilter); // Cho STAFF + ADMIN
+
+    // Check Email
+    Optional<CustomerEntity> findByEmailIgnoreCase(String email);
 
 }

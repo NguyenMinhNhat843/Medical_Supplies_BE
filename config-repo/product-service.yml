@@ -1,0 +1,21 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: product-service
+  datasource:
+    url: jdbc:mysql://mysql-db:3306/product_service?createDatabaseIfNotExist=true
+    username: root
+    password: "123456"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka

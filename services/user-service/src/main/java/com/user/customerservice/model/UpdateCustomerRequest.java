@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class UpdateCustomerRequest {
     private String fullName;
-    private String email;
+//    private String email;
     private String address;
 
     private String phone;
@@ -62,13 +62,13 @@ public class UpdateCustomerRequest {
         this.fullName = fullName;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
+//    public String getEmail() {
+//        return email;
+//    }
+//
+//    public void setEmail(String email) {
+//        this.email = email;
+//    }
 
     public String getAddress() {
         return address;

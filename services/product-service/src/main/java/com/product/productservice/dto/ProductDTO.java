@@ -13,6 +13,8 @@ public class ProductDTO {
     private Double price;
     private Double priceSupplied;
     private String image;
+    private String imageBase64;
+    private String imageName;
     private List<Long> categoryIds;
     private List<String> categories;    // để hiển thị tên category
     private String ingredient;
@@ -27,4 +29,5 @@ public class ProductDTO {
     private String manufacturingCountry;
     private Long sales;
     private Long likes;
+    private Boolean isFavorite;
 }

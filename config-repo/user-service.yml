@@ -1,0 +1,23 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:mysql://mysql-db:3306/customer_service
+    username: root
+    password: "123456"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  jwt:
+    secretKey: mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka
+auth-service:
+  url: http://AUTH-SERVICE

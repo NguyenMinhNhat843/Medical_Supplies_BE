@@ -2,15 +2,14 @@ package com.user.customerservice.controller;
 
 import com.user.customerservice.dto.CustomerDTO;
 import com.user.customerservice.entity.CustomerEntity;
-import com.user.customerservice.model.CreateAddressRequest;
-import com.user.customerservice.model.CreateCustomerRequest;
-import com.user.customerservice.model.CustomerInfoResponse;
-import com.user.customerservice.model.UpdateCustomerRequest;
+import com.user.customerservice.model.*;
 import com.user.customerservice.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -65,10 +64,10 @@ public class CustomerController {
         customerService.deleteCustomer(customerId);
     }
 
-    @PutMapping("/add/{userId}")
-    public CustomerEntity updateCustomer(@PathVariable Long userId, @RequestBody UpdateCustomerRequest customer) {
-        return customerService.updateCustomer(userId, customer);
-    }
+//    @PutMapping("/add/{userId}")
+//    public CustomerEntity updateCustomer(@PathVariable Long userId, @RequestBody UpdateCustomerRequest customer) {
+//        return customerService.updateCustomer(userId, customer);
+//    }
 
     // Tạo mới khách hàng
     @PostMapping
@@ -89,12 +88,66 @@ public class CustomerController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
-
+    //  Cập nhật địa chỉ của khách hàng
     @PostMapping("/update/address")
     public ResponseEntity<String> updateAddress(@RequestHeader("X-UserId") Long userId, @RequestBody CreateAddressRequest request) {
         customerService.CreateOrUpdateCustomerAddess(userId, request);
         return ResponseEntity.ok("Cập nhật địa chỉ thành công!");
     }
 
+    // Admin tạo tài khoản cho staff hoặc nhân viên
+    @PostMapping("/add-staff")
+    public ResponseEntity<?> addStaff(
+            @RequestHeader("X-Role") String role,
+            @RequestBody UserRegisterRequest request) {
 
+        if (!"ADMIN".equalsIgnoreCase(role)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Bạn không có quyền thực hiện chức năng này.");
+        }
+
+        customerService.register(request);
+        return ResponseEntity.ok("✅ Nhân viên đã được tạo thành công.");
+    }
+
+    // Lấy danh sách các nhân viên
+    @GetMapping("/staffs")
+    public ResponseEntity<List<UserFullInfoResponse>> getStaffAccounts() {
+        List<UserFullInfoResponse> list = customerService.getStaffAccounts();
+        return ResponseEntity.ok(list);
+    }
+
+    // Lấy danh sách các khách hàng
+    @GetMapping("/customers")
+    public ResponseEntity<List<UserFullInfoResponse>> getCustomerAccounts() {
+        List<UserFullInfoResponse> list = customerService.getCustomerAccounts();
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserFullInfoResponse>> searchUsers(@RequestParam String keyword) {
+        return ResponseEntity.ok(customerService.searchCustomers(keyword));
+    }
+
+    // Tìm STAFF + ADMIN + Lọc theo role
+    @GetMapping("/staffs/search")
+    public ResponseEntity<List<UserFullInfoResponse>> searchStaffs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "ALL") String role) {
+        return ResponseEntity.ok(customerService.searchStaffByKeywordAndRole(keyword, role));
+    }
+
+    // Tìm USER (khách hàng)
+    @GetMapping("/customers/search")
+    public ResponseEntity<List<UserFullInfoResponse>> searchCustomers(
+            @RequestParam(required = false) String keyword) {
+        return ResponseEntity.ok(customerService.searchByRoleAndKeyword("USER", keyword));
+    }
+
+    // Check Email Xem email đã tồn tại hay chưa
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        boolean exists = customerService.findByEmailIgnoreCase(email).isPresent();
+        return ResponseEntity.ok(exists);
+    }
 }
