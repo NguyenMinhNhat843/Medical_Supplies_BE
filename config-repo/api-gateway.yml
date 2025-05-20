@@ -85,7 +85,10 @@ spring:
 
   jwt:
     secretKey: mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM
-
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka
 logging:
   level:
     org.springframework.security: DEBUG
