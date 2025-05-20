@@ -18,18 +18,6 @@ services:
       SPRING_PROFILES_ACTIVE: native
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
-  api-gateway:
-    build: ./api-gateway
-    ports:
-      - "8080:8080"
-    depends_on:
-      - config-server
-    volumes:
-      - ./config-repo:/config-repo
-    environment:
-      SPRING_PROFILES_ACTIVE: native
-      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
-
   auth-service:
     build: ./services/auth-service
     ports:
@@ -113,7 +101,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: native
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
-  
+
   cartitem-service:
     build: ./services/cartItem-service
     ports:
@@ -125,7 +113,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: native
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
-  
+
   inventory-service:
     build: ./services/inventory-service
     ports:
@@ -136,12 +124,60 @@ services:
       - ./config-repo:/config-repo
     environment:
       SPRING_PROFILES_ACTIVE: native
-      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo	
+      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   admin-dashboard-service:
     build: ./services/admin-dashboard-service
     ports:
       - "8091:8091"
+    depends_on:
+      - config-server
+    volumes:
+      - ./config-repo:/config-repo
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
+
+  payment-service:
+    build: ./services/payment-service
+    ports:
+      - "8094:8094"
+    depends_on:
+      - config-server
+    volumes:
+      - ./config-repo:/config-repo
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
+
+  recommended-service:
+    build: ./services/recommended-service
+    ports:
+      - "8092:8092"
+    depends_on:
+      - config-server
+    volumes:
+      - ./config-repo:/config-repo
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
+
+  notification-service:
+    build: ./services/notification-service
+    ports:
+      - "8093:8093"
+    depends_on:
+      - config-server
+    volumes:
+      - ./config-repo:/config-repo
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
     depends_on:
       - config-server
     volumes:

@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/order_service
+    url: jdbc:mysql://mysql-db:3306/order_service
     username: root
     password: "123456"
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,4 +18,7 @@ spring:
 payment-service:
   url: http://PAYMENT-SERVICE
 
-
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka

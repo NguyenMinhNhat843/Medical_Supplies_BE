@@ -5,7 +5,7 @@ spring:
   application:
     name: recommended-service
   datasource:
-    url: jdbc:mysql://localhost:3306/recommended_service
+    url: jdbc:mysql://mysql-db:3306/recommended_service
     username: root
     password: "123456"
     driver-class-name: com.mysql.cj.jdbc.Driver
