@@ -10,3 +10,19 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+
+logging:
+  level:
+    root: INFO  # Cấp độ log mặc định cho toàn ứng dụng
+    com.cart.cartservice: DEBUG  # Log chi tiết cho package của cart-service
+    org.springframework.data.redis: DEBUG  # Log chi tiết cho Redis
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"  # Định dạng log trên console
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"  # Định dạng log trong file
+  file:
+    name: logs/cart-service.log  # Đường dẫn file log
