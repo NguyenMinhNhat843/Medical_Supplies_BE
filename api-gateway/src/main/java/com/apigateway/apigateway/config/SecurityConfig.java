@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers;
+import org.springframework.http.HttpMethod;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
@@ -28,6 +29,7 @@ public class SecurityConfig {
                         "/reviews/**","/chat/**","/api/products/**","/api/carts/**","/api/orders/**"))
 
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers("/auth/**").permitAll() // Cho phép toàn bộ auth
                         .pathMatchers("/users/**").permitAll() // Cho phép user
                         .pathMatchers("/api/products/**").permitAll() // Cho phép product

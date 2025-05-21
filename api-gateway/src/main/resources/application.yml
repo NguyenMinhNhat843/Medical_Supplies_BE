@@ -4,5 +4,20 @@ spring:
   config:
     import: "optional:configserver:"
 #  cloud:
+#    gateway:
+#      globalcors:
+#        add-to-simple-url-handler-mapping: true # <-- THÊM DÒNG NÀY
+#        corsConfigurations:
+#          '[/**]':
+#            allowedOrigins: "http://localhost:5173"
+#            allowedMethods:
+#              - GET
+#              - POST
+#              - PUT
+#              - DELETE
+#              - OPTIONS
+#            allowedHeaders: "*"
+#            allowCredentials: true
+#  cloud:
 #    config:
 #      uri: http://config-server:8888

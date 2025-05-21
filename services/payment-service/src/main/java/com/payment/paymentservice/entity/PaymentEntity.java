@@ -1,6 +1,7 @@
 package com.payment.paymentservice.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import lombok.Data;
 import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+@Entity
 @Data
 @Table(name = "payments")
 public class PaymentEntity {
@@ -26,7 +28,9 @@ public class PaymentEntity {
     @Column(name = "status", nullable = false)
     private String status;
     @CurrentTimestamp
+    @Column(name = "created_at")
     private Date createdAt;
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Date updatedAt;
 }

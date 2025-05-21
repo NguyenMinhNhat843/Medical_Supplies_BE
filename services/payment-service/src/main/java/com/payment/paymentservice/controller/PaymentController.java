@@ -14,14 +14,12 @@ import java.util.List;
 public class PaymentController {
     @Autowired
     private PaymentService paymentService;
-    // ✅ FE gửi lên thông tin orderId, method, amount
     @PostMapping
     public ResponseEntity<PaymentDTO> createPayment(@RequestBody PaymentRequest request) {
         PaymentDTO paymentDTO = paymentService.createPayment(request);
         return ResponseEntity.ok(paymentDTO);
     }
 
-    // ✅ FE hoặc admin cập nhật trạng thái thanh toán
     @PutMapping("/{id}/status")
     public ResponseEntity<PaymentDTO> updateStatus(
             @PathVariable Long id,
@@ -32,10 +30,9 @@ public class PaymentController {
                 : ResponseEntity.notFound().build();
     }
 
-    // ✅ FE hoặc admin lấy toàn bộ thanh toán theo orderId
     @GetMapping("/order/{orderId}")
     public ResponseEntity<List<PaymentDTO>> getByOrder(@PathVariable Integer orderId) {
-        List<PaymentDTO> payments = paymentService.getPaymentsByOrderId(orderId);
+        List<PaymentDTO> payments = paymentService.getPaymentsByOrderId(Long.valueOf(orderId));
         return ResponseEntity.ok(payments);
     }
 }
