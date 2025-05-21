@@ -12,9 +12,9 @@ pipeline {
       steps {
         script {
           if (isUnix()) {
-            sh 'docker compose build'
+            sh 'docker-compose build'
           } else {
-            bat 'docker compose build'
+            bat 'docker-compose build'
           }
         }
       }
@@ -24,11 +24,11 @@ pipeline {
       steps {
         script {
           if (isUnix()) {
-            sh 'docker compose down'
-            sh 'docker compose up -d'
+            sh 'docker-compose down'
+            sh 'docker-compose up -d'
           } else {
-            bat 'docker compose down'
-            bat 'docker compose up -d'
+            bat 'docker-compose down'
+            bat 'docker-compose up -d'
           }
         }
       }
