@@ -21,7 +21,7 @@ openai:
     url: https://openrouter.ai/api/v1/chat/completions
 
 product:
-  service-url: http://localhost:8080/api/products/ai/search
+  service-url: http://api-gateway:8080/api/products/ai/search
 
 eureka:
   client:
