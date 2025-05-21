@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -34,13 +35,13 @@ public class CustomerController {
         return customerService.getCustomerByUserId(userId);
     }
 
-    // Cập nhật thông tin bản thân
-//    @PostMapping("/me")
-//    public CustomerEntity saveProfile(@RequestHeader("X-UserId") Long userId, @RequestBody CustomerEntity profile) {
-//       //Long userId = Long.parseLong(user.getName());
-//        profile.setUserId(userId);
-//        return customerService.saveCustomer(profile);
-//    }
+//     Cập nhật thông tin bản thân
+    @PostMapping("/me/demo")
+    public CustomerEntity saveProfile(@RequestHeader("X-UserId") Long userId, @RequestBody CustomerEntity profile) {
+       //Long userId = Long.parseLong(user.getName());
+        profile.setUserId(userId);
+        return customerService.saveCustomer(profile);
+    }
 
     // Cập nhật thông tin cá nhân
     @PutMapping("/me")
@@ -69,11 +70,11 @@ public class CustomerController {
 //    }
 
     // Tạo mới khách hàng
-//    @PostMapping
-//    public ResponseEntity<Void> createCustomerInfo(@RequestBody CreateCustomerRequest request) {
-//        customerService.createCustomerForUser(request);
-//        return ResponseEntity.ok().build();
-//    }
+    @PostMapping
+    public ResponseEntity<Void> createCustomerInfo(@RequestBody CreateCustomerRequest request) {
+        customerService.createCustomerForUser(request);
+        return ResponseEntity.ok().build();
+    }
 
     // Lấy thông tin khách hàng theo email
     @GetMapping("/email")
@@ -109,4 +110,44 @@ public class CustomerController {
         return ResponseEntity.ok("✅ Nhân viên đã được tạo thành công.");
     }
 
+    // Lấy danh sách các nhân viên
+    @GetMapping("/staffs")
+    public ResponseEntity<List<UserFullInfoResponse>> getStaffAccounts() {
+        List<UserFullInfoResponse> list = customerService.getStaffAccounts();
+        return ResponseEntity.ok(list);
+    }
+
+    // Lấy danh sách các khách hàng
+    @GetMapping("/customers")
+    public ResponseEntity<List<UserFullInfoResponse>> getCustomerAccounts() {
+        List<UserFullInfoResponse> list = customerService.getCustomerAccounts();
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserFullInfoResponse>> searchUsers(@RequestParam String keyword) {
+        return ResponseEntity.ok(customerService.searchCustomers(keyword));
+    }
+
+    // Tìm STAFF + ADMIN + Lọc theo role
+    @GetMapping("/staffs/search")
+    public ResponseEntity<List<UserFullInfoResponse>> searchStaffs(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false, defaultValue = "ALL") String role) {
+        return ResponseEntity.ok(customerService.searchStaffByKeywordAndRole(keyword, role));
+    }
+
+    // Tìm USER (khách hàng)
+    @GetMapping("/customers/search")
+    public ResponseEntity<List<UserFullInfoResponse>> searchCustomers(
+            @RequestParam(required = false) String keyword) {
+        return ResponseEntity.ok(customerService.searchByRoleAndKeyword("USER", keyword));
+    }
+
+    // Check Email Xem email đã tồn tại hay chưa
+    @GetMapping("/check-email")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        boolean exists = customerService.findByEmailIgnoreCase(email).isPresent();
+        return ResponseEntity.ok(exists);
+    }
 }

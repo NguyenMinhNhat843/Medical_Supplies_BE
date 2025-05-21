@@ -29,4 +29,5 @@ public class ProductDTO {
     private String manufacturingCountry;
     private Long sales;
     private Long likes;
+    private Boolean isFavorite;
 }

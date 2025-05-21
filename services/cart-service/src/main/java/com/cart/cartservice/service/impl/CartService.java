@@ -8,9 +8,12 @@ import com.cart.cartservice.repository.CartRepository;
 import com.cart.cartservice.service.inter.cart_interface;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,13 +63,27 @@ public class CartService implements cart_interface {
 
     @Override
     public CartWithItems addToCart(Long userId, Long productId, int quantity) {
-        // 1. Tìm hoặc tạo cart mới
+        // 1. Tìm hoặc tạo giỏ hàng mới
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseGet(() -> cartRepository.save(new Cart(userId)));
 
-        // 2. Gửi request tạo cartItem
-        CartItemRequest request = new CartItemRequest(cart.getId(), productId, quantity);
-        cartItemClient.createCartItem(request);
+        // 2. Kiểm tra xem CartItem với productId đã tồn tại chưa
+        List<CartItemDTO> existingItems = cartItemClient.getItemsByCartId(cart.getId());
+        Optional<CartItemDTO> existingItem = existingItems.stream()
+                .filter(item -> item.getProductId().equals(productId))
+                .findFirst();
+
+        if (existingItem.isPresent()) {
+            // Cập nhật số lượng của CartItem hiện có
+            CartItemDTO item = existingItem.get();
+            int newQuantity = item.getQuantity() + quantity;
+            CartItemRequest updateRequest = new CartItemRequest(cart.getId(), productId, newQuantity);
+            cartItemClient.updateCartItem(item.getId(), updateRequest); // Giả sử updateCartItem tồn tại
+        } else {
+            // Tạo CartItem mới
+            CartItemRequest request = new CartItemRequest(cart.getId(), productId, quantity);
+            cartItemClient.createCartItem(request);
+        }
 
         // 3. Lấy lại danh sách item từ cart-item-service
         List<CartItemDTO> items = cartItemClient.getItemsByCartId(cart.getId());
@@ -103,6 +120,53 @@ public class CartService implements cart_interface {
         result.setItems(detailedItems);
 
         return result;
+    }
+
+    @Override
+    public CartWithItems deleteCartItem(Long userId, Long cartItemId) {
+        // 1. Tìm giỏ hàng của người dùng
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+
+        // 2. Xóa CartItem thông qua CartItemClient
+        cartItemClient.deleteCartItem(cartItemId);
+
+        // 3. Lấy lại danh sách item từ cart-item-service
+        List<CartItemDTO> items = cartItemClient.getItemsByCartId(cart.getId());
+
+        return new CartWithItems(cart, items);
+    }
+
+    @Override
+    public CartWithItems incrementCartItemQuantity(Long userId, Long cartItemId, int amount) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+        try {
+            cartItemClient.incrementCartItemQuantity(cartItemId, amount);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new RuntimeException("CartItem not found: " + cartItemId);
+            }
+            throw e;
+        }
+        List<CartItemDTO> items = cartItemClient.getItemsByCartId(cart.getId());
+        return new CartWithItems(cart, items);
+    }
+
+    @Override
+    public CartWithItems decrementCartItemQuantity(Long userId, Long cartItemId, int amount) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+        try {
+            cartItemClient.decrementCartItemQuantity(cartItemId, amount);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new RuntimeException("CartItem not found: " + cartItemId);
+            }
+            throw e;
+        }
+        List<CartItemDTO> items = cartItemClient.getItemsByCartId(cart.getId());
+        return new CartWithItems(cart, items);
     }
 }
 

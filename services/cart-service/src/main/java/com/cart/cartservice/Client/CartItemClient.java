@@ -26,5 +26,24 @@ public class CartItemClient {
         CartItemDTO[] response = restTemplate.getForObject(url, CartItemDTO[].class);
         return Arrays.asList(response);
     }
+    public void updateCartItem(Long cartItemId, CartItemRequest request) {
+        String url = BASE_URL + "/" + cartItemId;
+        restTemplate.put(url, request);
+    }
+
+    public void deleteCartItem(Long cartItemId) {
+        String url = BASE_URL + "/" + cartItemId;
+        restTemplate.delete(url);
+    }
+
+    public void incrementCartItemQuantity(Long cartItemId, int amount) {
+        String url = BASE_URL + "/" + cartItemId + "/increment?amount=" + amount;
+        restTemplate.postForObject(url, null, Void.class);
+    }
+
+    public void decrementCartItemQuantity(Long cartItemId, int amount) {
+        String url = BASE_URL + "/" + cartItemId + "/decrement?amount=" + amount;
+        restTemplate.postForObject(url, null, Void.class);
+    }
 }
 

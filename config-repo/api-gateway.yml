@@ -4,6 +4,11 @@ server:
 spring:
   application:
     name: api-gateway
+
+  redis:
+    host: localhost
+    port: 6379
+
   cloud:
     gateway:
       routes:
@@ -11,58 +16,94 @@ spring:
           uri: lb://AUTH-SERVICE
           predicates:
             - Path=/auth/**
+
         - id: product-service
           uri: lb://PRODUCT-SERVICE
           predicates:
             - Path=/api/products/**, /api/category/**, /api/picture/repository/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                rate-limiter: "#{@fixedWindowRateLimiter}"   
+                key-resolver: "#{@remoteAddrKeyResolver}"    
+                includeHeaders: true
+
         - id: order-service
           uri: lb://ORDER-SERVICE
           predicates:
-            - Path=/orders/**, /api/orders/**
+            - Path=/orders/**, /api/notifications/** , /api/vouchers/**
+
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
             - Path=/users/**
+
         - id: review-service
           uri: lb://REVIEW-SERVICE
           predicates:
             - Path=/reviews/**
+
         - id: chat-service
           uri: lb://CHAT-SERVICE
           predicates:
             - Path=/chat/**
+
         - id: cart-service
           uri: lb://CART-SERVICE
           predicates:
             - Path=/api/carts/**
+
         - id: cart-item-service
           uri: lb://CARTITEM-SERVICE
           predicates:
             - Path=/api/cart-items/**
+
         - id: inventory-service
           uri: lb://INVENTORY-SERVICE
           predicates:
             - Path=/api/inventory/**
+
         - id: admin-dashboard-service
           uri: lb://ADMIN-DASHBOARD-SERVICE
           predicates:
+<<<<<<< HEAD
             - Path=/api/inventory/**
         - id: payment-service
           uri: lb://PAYMENT-SERVICE
           predicates:
             - Path=/api/payments/**
+=======
+            - Path=/api/dashboard/**
+
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/payments/**, /api/stripe/**
+
+>>>>>>> 850e78f10f8036491a7a7b90aa61369c721ea211
         - id: notification-service
           uri: lb://NOTIFICATION-SERVICE
           predicates:
             - Path=/api/notification/**
+<<<<<<< HEAD
         - id: recommend-service
           uri: lb://RECOMMEND-SERVICE
           predicates:
             - Path=/api/recommend/**
+=======
+
+        - id: recommended-service
+          uri: lb://RECOMMENDED-SERVICE
+          predicates:
+            - Path=/api/recommended/**
+>>>>>>> 850e78f10f8036491a7a7b90aa61369c721ea211
 
   jwt:
     secretKey: mySuperSecretKey0123456789ABCDEFGHIJTEAMNEXUS5KTTKPM
-
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka
 logging:
   level:
     org.springframework.security: DEBUG

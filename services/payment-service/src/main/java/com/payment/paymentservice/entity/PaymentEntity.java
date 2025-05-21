@@ -21,11 +21,11 @@ public class PaymentEntity {
     private Long orderId;
     @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
-    @Column(name = "transaction_id", nullable = false)
+    @Column(name = "transaction_id")
     private String transactionId;
     @Column(name = "amount", nullable = false)
     private BigDecimal amount;
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private String status;
     @CurrentTimestamp
     @Column(name = "created_at")

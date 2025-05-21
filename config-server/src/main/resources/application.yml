@@ -10,5 +10,12 @@ spring:
     config:
       server:
         native:
+<<<<<<< HEAD
           #          search-locations: file:/config-repo
           search-locations: file:///D:\WorkSpace\MedicalSupplies\Medical_Supplies_BE\config-repo
+=======
+          search-locations: file:/config-repo
+#           search-locations: file:///D:/DH17KTPM/HK2_2024_2025/KTTKPM/Project_Medical/Medical_Supplies_BE/config-repo
+
+
+>>>>>>> 850e78f10f8036491a7a7b90aa61369c721ea211

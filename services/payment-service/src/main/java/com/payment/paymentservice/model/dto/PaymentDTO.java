@@ -15,4 +15,12 @@ public class PaymentDTO {
     private String status;
     private Date createdAt;
     private Date updatedAt;
+    private String transferContent;
+    private String qrCodeBase64;
+    private String qrRawContent;        // Mã QR dạng raw string để scan trực tiếp
+    private String qrCodeImageUrl;
+    private String stripeClientSecret;
+
+
+
 }

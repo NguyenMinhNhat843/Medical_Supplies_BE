@@ -5,7 +5,7 @@ spring:
   application:
     name: payment-service
   datasource:
-    url: jdbc:mysql://localhost:3306/payment_service
+    url: jdbc:mysql://mysql-db:3306/payment_service
     username: root
     password: "root"
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -15,3 +15,9 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+order-service:
+  url: http://ORDER-SERVICE
+stripe:
+  secret-key: 
+  webhook:
+    secret: whsec_97705779a9ab1062496ec01f1de6fa276793df695d4ab648ad543dc772a5bc08

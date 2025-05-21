@@ -10,9 +10,9 @@ public interface IProductService {
     ProductDTO createOrUpdateProduct(ProductDTO productDto);
     ProductDTO updateProduct(Long id, ProductDTO productDto);
     void deleteProduct(Long id);
-    ProductDTO getProductById(Long id);
+    ProductDTO getProductById(Long id, Long userId);
     List<ProductDTO> getAllProducts();
-    List<ProductDTO> getProductsByCategory(Long categoryId);
+    List<ProductDTO> getProductsByCategory(Long categoryId, Long userId);
 
     List<ProductDTO> searchProductsByName(String name);
 
@@ -20,8 +20,10 @@ public interface IProductService {
 
     List<ProductDTO> searchProductsByKeyword(String keyword);
 
-    List<ProductDTO> advancedSearchProducts(ProductSearchRequest request);
+    List<ProductDTO> advancedSearchProducts(ProductSearchRequest request, Long userId);
     Map<String, List<String>> getFilterOptions();
 
-
+    List<ProductDTO> getAllProductsWithFavorites(Long userId);
+    List<ProductDTO> getProductsByIds(List<Long> ids);
+    boolean existsById(Long productId);
 }

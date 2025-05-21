@@ -22,4 +22,17 @@ public interface ICustomerService {
     CustomerEntity CreateOrUpdateCustomerAddess(Long userId, CreateAddressRequest request);
 
     void register(UserRegisterRequest request);
+
+    List<UserFullInfoResponse> getStaffAccounts();
+
+    List<UserFullInfoResponse> getCustomerAccounts();
+
+    List<UserFullInfoResponse> searchCustomers(String keyword);
+
+    List<UserFullInfoResponse> searchByRoleAndKeyword(String roleGroup, String keyword);
+    List<UserFullInfoResponse> searchStaffByKeywordAndRole(String keyword, String roleFilter); // Cho STAFF + ADMIN
+
+    // Check Email
+    Optional<CustomerEntity> findByEmailIgnoreCase(String email);
+
 }

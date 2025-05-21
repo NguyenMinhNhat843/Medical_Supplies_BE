@@ -3,6 +3,7 @@ spring:
     name: api-gateway
   config:
     import: "optional:configserver:"
+<<<<<<< HEAD
 #  cloud:
 #    gateway:
 #      globalcors:
@@ -21,3 +22,8 @@ spring:
 #  cloud:
 #    config:
 #      uri: http://config-server:8888
+=======
+  cloud:
+    config:
+      uri: http://config-server:8888
+>>>>>>> 850e78f10f8036491a7a7b90aa61369c721ea211

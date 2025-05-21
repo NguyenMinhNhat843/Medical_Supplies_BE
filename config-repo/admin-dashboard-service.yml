@@ -8,4 +8,8 @@ spring:
     exclude: 
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka
 

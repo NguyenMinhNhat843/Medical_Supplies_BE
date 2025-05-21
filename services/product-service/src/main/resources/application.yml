@@ -7,6 +7,7 @@ eureka:
     ip-address: 127.0.0.1
 
 spring:
+<<<<<<< HEAD
   application:
     name: product-service
   config:
@@ -14,3 +15,12 @@ spring:
 #    cloud:
 #        config:
 #            uri: http://config-server:8888
+=======
+    application:
+        name: product-service
+    config:
+        import: "optional:configserver:"
+    cloud:
+        config:
+            uri: http://config-server:8888
+>>>>>>> 850e78f10f8036491a7a7b90aa61369c721ea211
