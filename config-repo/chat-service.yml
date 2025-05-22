@@ -17,7 +17,7 @@ spring:
     name: chat-service
 openai:
   api:
-    key: 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
+    key: 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
     url: https://openrouter.ai/api/v1/chat/completions
 
 product:

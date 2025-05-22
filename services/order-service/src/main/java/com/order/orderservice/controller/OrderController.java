@@ -6,8 +6,8 @@ import com.order.orderservice.dto.CartWithItemsDTO;
 import com.order.orderservice.dto.DashboardStats;
 import com.order.orderservice.dto.VoucherApplicationResponseDTO;
 import com.order.orderservice.entity.Order;
-import com.order.orderservice.models.PaymentUpdateRequest;
 import com.order.orderservice.entity.Voucher;
+import com.order.orderservice.models.PaymentUpdateRequest;
 import com.order.orderservice.repository.VoucherRepository;
 import com.order.orderservice.service.impl.OrdersService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,9 +16,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -51,11 +54,14 @@ public class OrderController {
     // Phương thức gửi thông báo đến notification-service
     private void sendNotification(Long userId, String message, String type) {
         try {
-            String url = "http://localhost:8080/api/notifications/send?userId=" + userId + "&message=" + message + "&type=" + type;
+            String url = "http://localhost:8092/api/notifications/send";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            HttpEntity<String> request = new HttpEntity<>(headers);
-
+            Map<String, Object> body = new HashMap<>();
+            body.put("userId", userId);
+            body.put("message", message); // Gửi message gốc, không mã hóa
+            body.put("type", type);
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
             restTemplate.postForEntity(url, request, String.class);
             System.out.println("Sent notification to notification-service: userId=" + userId + ", message=" + message);
         } catch (Exception e) {
@@ -131,10 +137,29 @@ public class OrderController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponseDTO<Order>> updateOrder(
-            @PathVariable Integer id, @RequestBody Order orderDetails) {
+            @PathVariable Integer id, @RequestBody Order orderDetails, HttpServletRequest request) {
         try {
+            ResponseEntity<?> userIdResponse = extractUserId(request);
+            if (userIdResponse.getStatusCode() != HttpStatus.OK) {
+                return ResponseEntity.badRequest().body(
+                        ApiResponseDTO.<Order>builder()
+                                .message((String) userIdResponse.getBody())
+                                .data(null)
+                                .build()
+                );
+            }
+            Long userId = (Long) userIdResponse.getBody();
+
             Order updatedOrder = orderService.updateOrder(id, orderDetails);
             if (updatedOrder != null) {
+                // Kiểm tra nếu trạng thái thay đổi
+                if (orderDetails.getStatus() != null && updatedOrder.getOldStatus() != null
+                        && !orderDetails.getStatus().equals(updatedOrder.getOldStatus())) {
+                    sendNotification((long) updatedOrder.getCustomerId(),
+                            "Đơn hàng #" + updatedOrder.getId() + " đã được cập nhật trạng thái: " + updatedOrder.getStatus(),
+                            "ORDER_STATUS_UPDATED");
+                }
+
                 return ResponseEntity.ok(
                         ApiResponseDTO.<Order>builder()
                                 .message("Cập nhật đơn hàng thành công")
@@ -252,7 +277,6 @@ public class OrderController {
         Voucher savedVoucher = voucherRepository.save(voucher);
         return ResponseEntity.ok(savedVoucher);
     }
-
 
     // payment-service gọi đến hàm này để lấy thông tin đơn hàng
     @PutMapping("/{orderId}/cod-status")

@@ -62,4 +62,7 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<OrderItem> orderItems;
+
+    @Transient
+    private OrderStatus oldStatus; // Trường tạm thời để lưu trạng thái cũ
 }
