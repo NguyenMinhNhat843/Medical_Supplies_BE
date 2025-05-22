@@ -19,3 +19,14 @@ eureka:
   client:
     service-url:
       defaultZone: http://service-registry:8761/eureka
+logging:
+  level:
+    root: INFO
+    com.product.productservice: DEBUG
+    org.springframework: INFO
+    org.hibernate: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/product-service.log

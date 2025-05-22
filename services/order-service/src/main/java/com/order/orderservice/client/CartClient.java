@@ -1,6 +1,6 @@
 package com.order.orderservice.client;
 
-import com.order.orderservice.dto.CartWithItemsDTO;
+import com.order.orderservice.dto.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
