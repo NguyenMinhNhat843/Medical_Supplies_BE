@@ -2,11 +2,13 @@ version: '3.8'
 
 services:
   service-registry:
+    image: service-registry
     build: ./service-registry
     ports:
       - "8761:8761"
 
   config-server:
+    image: config-server
     build: ./config-server
     ports:
       - "8888:8888"
@@ -19,6 +21,7 @@ services:
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   auth-service:
+    image: auth-service
     build: ./services/auth-service
     ports:
       - "8082:8082"
@@ -31,6 +34,7 @@ services:
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   user-service:
+    image: user-service
     build: ./services/user-service
     ports:
       - "8083:8083"
@@ -43,6 +47,7 @@ services:
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   product-service:
+    image: product-service
     build: ./services/product-service
     ports:
       - "8085:8085"
@@ -55,6 +60,7 @@ services:
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   order-service:
+    image: order-service
     build: ./services/order-service
     ports:
       - "8087:8087"
@@ -67,12 +73,13 @@ services:
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   cart-service:
+    image: cart-service
     build: ./services/cart-service
     ports:
       - "8088:8088"
     depends_on:
       - config-server
-      - redis         # ➕ đảm bảo cart-service chạy sau redis
+      - redis
     volumes:
       - ./config-repo:/config-repo
     environment:
@@ -80,6 +87,7 @@ services:
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   review-service:
+    image: review-service
     build: ./services/review-service
     ports:
       - "8084:8084"
@@ -92,6 +100,7 @@ services:
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   chat-service:
+    image: chat-service
     build: ./services/chat-service
     ports:
       - "8086:8086"
@@ -104,6 +113,7 @@ services:
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   cartitem-service:
+    image: cartitem-service
     build: ./services/cartItem-service
     ports:
       - "8089:8089"
@@ -115,31 +125,8 @@ services:
       SPRING_PROFILES_ACTIVE: native
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
-  inventory-service:
-    build: ./services/inventory-service
-    ports:
-      - "8090:8090"
-    depends_on:
-      - config-server
-    volumes:
-      - ./config-repo:/config-repo
-    environment:
-      SPRING_PROFILES_ACTIVE: native
-      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
-
-  admin-dashboard-service:
-    build: ./services/admin-dashboard-service
-    ports:
-      - "8091:8091"
-    depends_on:
-      - config-server
-    volumes:
-      - ./config-repo:/config-repo
-    environment:
-      SPRING_PROFILES_ACTIVE: native
-      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
-
   payment-service:
+    image: payment-service
     build: ./services/payment-service
     ports:
       - "8094:8094"
@@ -152,6 +139,7 @@ services:
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   recommended-service:
+    image: recommended-service
     build: ./services/recommended-service
     ports:
       - "8092:8092"
@@ -163,19 +151,9 @@ services:
       SPRING_PROFILES_ACTIVE: native
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
-  nofication-service:
-    build: ./services/nofitication-service
-    ports:
-      - "8093:8093"
-    depends_on:
-      - config-server
-    volumes:
-      - ./config-repo:/config-repo
-    environment:
-      SPRING_PROFILES_ACTIVE: native
-      SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
 
   api-gateway:
+    image: api-gateway
     build: ./api-gateway
     ports:
       - "8080:8080"
@@ -202,7 +180,7 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
-    restart: always   
+    restart: always
 
 volumes:
   mysql_data:

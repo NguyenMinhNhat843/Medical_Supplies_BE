@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="24622a26-5f71-413c-9d4b-28a4d3ce4568" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../api-gateway/src/main/java/com/apigateway/apigateway/config/CorsGlobalConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/../../api-gateway/src/main/java/com/apigateway/apigateway/config/CorsGlobalConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../api-gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../../api-gateway/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../config-server/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../../config-server/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/admindashboard/admindashboardservice/AdminDashboardServiceApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/admindashboard/admindashboardservice/client/InventoryClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/admindashboard/admindashboardservice/config/RestTemplateConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/admindashboard/admindashboardservice/controller/AdminDashboardController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/admindashboard/admindashboardservice/dto/InventoryDetailDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/admindashboard/admindashboardservice/dto/InventorySummaryDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/admindashboard/admindashboardservice/dto/ProductDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/admindashboard/admindashboardservice/dto/UserSummaryDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/admindashboard/admindashboardservice/service/AdminDashboardService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../auth-service/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../auth-service/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/java/com/inventory/inventoryservice/InventoryServiceApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/java/com/inventory/inventoryservice/client/ProductClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/java/com/inventory/inventoryservice/config/RestTemplateConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/java/com/inventory/inventoryservice/controller/InventoryController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/java/com/inventory/inventoryservice/dto/InventoryDetailDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/java/com/inventory/inventoryservice/dto/ProductDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/java/com/inventory/inventoryservice/entity/Inventory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/java/com/inventory/inventoryservice/repository/InventoryRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/java/com/inventory/inventoryservice/service/Implements/InventoryServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/java/com/inventory/inventoryservice/service/Inter/InventoryService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../inventory-service/src/main/resources/bootstrap.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/Dockerfile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/mvnw" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/mvnw.cmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/main/java/com/notification/nofiticationservice/NofiticationServiceApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/main/java/com/notification/nofiticationservice/controller/NotificationController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/main/java/com/notification/nofiticationservice/controller/UserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/main/java/com/notification/nofiticationservice/entity/Notification.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/main/java/com/notification/nofiticationservice/entity/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/main/java/com/notification/nofiticationservice/repository/NotificationRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/main/java/com/notification/nofiticationservice/repository/UserRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/main/java/com/notification/nofiticationservice/service/EmailService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/main/java/com/notification/nofiticationservice/service/NotificationService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/main/resources/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../nofitication-service/src/test/java/com/notification/nofiticationservice/NofiticationServiceApplicationTests.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Use Maven wrapper" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2xLJXJxs7VrcTppgJno0HCg7bjR" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "PhuocNguyen",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/DH17KTPM/HK2_2024_2025/KTTKPM/Project_Medical/Medical_Supplies_BE/services/admin-dashboard-service",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="AdminDashboardServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="admin-dashboard-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.admindashboard.admindashboardservice.AdminDashboardServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="jdk-22-openjdk-22-4caba194b151-f504ca98" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="24622a26-5f71-413c-9d4b-28a4d3ce4568" name="Changes" comment="" />
+      <created>1747711459425</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1747711459425</updated>
+      <workItem from="1747711460589" duration="28000" />
+      <workItem from="1747733480554" duration="13000" />
+      <workItem from="1747888990891" duration="671000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
