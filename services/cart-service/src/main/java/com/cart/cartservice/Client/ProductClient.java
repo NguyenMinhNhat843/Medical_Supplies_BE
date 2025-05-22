@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class ProductClient {
 
-    private final String BASE_URL = "http://localhost:8080/api/products"; // Giả sử product-service chạy ở 8083
+    private final String BASE_URL = "http://api-gateway:8080/api/products"; // Giả sử product-service chạy ở 8083
 
     @Autowired
     private RestTemplate restTemplate;

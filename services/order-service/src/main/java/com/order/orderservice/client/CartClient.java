@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CartClient {
 
     private final RestTemplate restTemplate;
-    @Value("${cart.service.url:http://localhost:8080/api/carts}")
+    @Value("${cart.service.url:http://api-gateway:8080/api/carts}")
     private String cartServiceUrl;
 
     @Autowired
