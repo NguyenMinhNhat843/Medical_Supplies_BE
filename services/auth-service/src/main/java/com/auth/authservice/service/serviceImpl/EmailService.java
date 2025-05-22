@@ -23,5 +23,16 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    // gửi xaác thực OTP cho đăng ký tài khoản
+    public void sendRegisterOtp(String to, String otp) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Mã OTP xác thực đăng ký tài khoản");
+        message.setText("Mã OTP của bạn là: " + otp + "\nMã này có hiệu lực trong 5 phút.");
+        System.out.println("✅ Email sent.");
+
+        mailSender.send(message);
+    }
+
 
 }

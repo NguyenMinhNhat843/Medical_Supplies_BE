@@ -203,7 +203,7 @@ public class UserServiceImpl implements IUserService {
 
         otpService.storeRegistrationInfo(request.getEmail(), request);
         String otp = otpService.generateOtp(request.getEmail(), null);
-        emailService.sendOtp(request.getEmail(), otp);
+        emailService.sendRegisterOtp(request.getEmail(), otp);
 
         return ResponseEntity.ok("Đã gửi mã OTP đến email. Vui lòng kiểm tra hộp thư.");
     }
