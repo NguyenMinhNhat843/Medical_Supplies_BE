@@ -12,7 +12,7 @@ import java.util.List;
 @Component
 public class CartItemClient {
 
-    private final String BASE_URL = "http://localhost:8089/api/cart-items"; // thay bằng URL của cartItem service
+    private final String BASE_URL = "http://localhost:8080/api/cart-items"; // thay bằng URL của cartItem service
 
     @Autowired
     private RestTemplate restTemplate;
