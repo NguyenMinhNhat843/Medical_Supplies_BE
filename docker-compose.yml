@@ -54,7 +54,7 @@ services:
     depends_on:
       - config-server
     volumes:
-    - ./logs/product-service:/logs
+    - ./services/product-service/logs:/logs
     - ./config-repo:/config-repo
     environment:
       SPRING_PROFILES_ACTIVE: native
@@ -68,7 +68,7 @@ services:
     depends_on:
       - config-server
     volumes:
-    - ./logs/order-service:/logs
+    - ./services/order-service/logs:/logs
     - ./config-repo:/config-repo
     environment:
       SPRING_PROFILES_ACTIVE: native
@@ -83,7 +83,7 @@ services:
       - config-server
       - redis
     volumes:
-    - ./logs/cart-service:/logs
+    - ./services/cart-service/logs:/logs
     - ./config-repo:/config-repo
     environment:
       SPRING_PROFILES_ACTIVE: native
