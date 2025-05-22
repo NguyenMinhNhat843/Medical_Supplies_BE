@@ -72,6 +72,7 @@ services:
       - "8088:8088"
     depends_on:
       - config-server
+      - redis         # ➕ đảm bảo cart-service chạy sau redis
     volumes:
       - ./config-repo:/config-repo
     environment:
@@ -195,6 +196,13 @@ services:
       - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: always   
 
 volumes:
   mysql_data:
