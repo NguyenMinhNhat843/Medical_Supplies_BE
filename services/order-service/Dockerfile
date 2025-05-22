@@ -8,5 +8,7 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:22-jdk-alpine
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
+RUN mkdir -p /app/logs
+VOLUME /app/logs
 EXPOSE 8087
 ENTRYPOINT ["java", "-jar", "app.jar"]

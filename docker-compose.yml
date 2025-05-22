@@ -68,8 +68,8 @@ services:
     depends_on:
       - config-server
     volumes:
-    - ./services/order-service/logs:/logs
     - ./config-repo:/config-repo
+    - ./services/order-service/logs:/app/logs
     environment:
       SPRING_PROFILES_ACTIVE: native
       SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: file:/config-repo
