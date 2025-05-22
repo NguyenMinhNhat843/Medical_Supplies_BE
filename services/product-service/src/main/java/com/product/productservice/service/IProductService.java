@@ -26,4 +26,5 @@ public interface IProductService {
     List<ProductDTO> getAllProductsWithFavorites(Long userId);
     List<ProductDTO> getProductsByIds(List<Long> ids);
     boolean existsById(Long productId);
+    List<ProductDTO> getAllProductsRetry();
 }

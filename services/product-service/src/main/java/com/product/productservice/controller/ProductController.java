@@ -144,5 +144,11 @@ public class ProductController {
     public ResponseEntity<Map<String, List<String>>> getFilters() {
         return ResponseEntity.ok(productService.getFilterOptions());
     }
+
+    // Retry
+    @GetMapping("/retry")
+    public ResponseEntity<List<ProductDTO>> getAllProductsRetry() {
+        return ResponseEntity.ok(productService.getAllProductsRetry());
+    }
 }
 
