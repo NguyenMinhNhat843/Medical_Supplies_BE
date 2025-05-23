@@ -3,6 +3,7 @@ package com.apigateway.apigateway.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
@@ -28,6 +29,7 @@ public class SecurityConfig {
                         "/reviews/**","/chat/**","/api/products/**","/api/carts/**","/api/orders/**"))
 
                 .authorizeExchange(exchanges -> exchanges
+                        .pathMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .pathMatchers("/auth/**").permitAll() // Cho phép toàn bộ auth
                         .pathMatchers("/users/**").permitAll() // Cho phép user
                         .pathMatchers("/api/products/**").permitAll() // Cho phép product
